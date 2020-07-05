@@ -1,0 +1,72 @@
+
+.dialog-container {
+ 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    position: fixed; 
+    z-index: 4;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-locked);
+
+}
+
+.dialog-window {
+
+    width: 480px;
+    height: 297px;
+    padding: 15px;
+    border-radius: 15px;
+    background-color: var(--background);
+
+}
+
+.dialog-password-box-title {
+
+    width: 95%;
+    text-align: center;
+    margin: 15px auto 0 auto;
+    font-size: 25px;
+    font-weight: 700;
+
+}
+
+.dialog-password-container,
+.dialog-button-container {
+
+    margin: 15px auto 0 auto;
+    width: 95%;
+
+}
+
+.dialog-password-container {
+
+    height: 45%;
+
+}
+
+.dialog-password-input {
+
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+
+}
+
+.dialog-button-container {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+.dialog-button-cancel,
+.dialog-button-ok {
+
+    width: 180px;
+
+}

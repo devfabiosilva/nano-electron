@@ -1,0 +1,114 @@
+.about-container {
+
+    height: 100%;
+    width: 100%;
+
+}
+
+.about-title {
+
+    width: 100%;
+    text-align: center;
+    font-size: 34px;
+    font-weight: 700;
+    padding: 6px;
+
+}
+
+.about-content {
+
+    width: 100%;
+    height: 75%;
+    font-size: 18px;
+
+}
+
+.about-author-title,
+.about-text-content-title,
+.about-email-title,
+.about-github-title,
+.about-donation-title {
+
+    padding: 4px;
+    width: 100px;
+    text-align: center;
+    font-weight: 700;;
+
+}
+
+
+.about-text-content-msg,
+.about-author-msg,
+.about-email-msg,
+.about-github-msg,
+.about-donation-msg {
+
+    margin: 4px auto;
+    width: 800px;
+    padding: 4px 8px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: var(--background-content);
+    color: var(--color);
+
+}
+
+.about-text-content-msg {
+
+    height: 125px;
+
+}
+
+.about-button-content {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+}
+
+.about-button-go-back {
+
+    width: 400px;
+
+}
+
+.about-text-content,
+.about-author-content,
+.about-email-content,
+.about-github-content,
+.about-donation-content,
+.about-bitcoin-content,
+.about-nano-content,
+.about-litecoin-content,
+.about-dogecoin-content
+ {
+
+    display: flex;
+
+}
+
+.about-bitcoin-title,
+.about-nano-title,
+.about-litecoin-title,
+.about-dogecoin-title {
+
+    padding: 0 4px 4px 0;
+    width: 80px;
+    font-weight: 700;
+
+}
+
+.about-bitcoin-address,
+.about-nano-address,
+.about-litecoin-address,
+.about-dogecoin-address {
+
+    padding: 0 4px 4px 0;
+    width: 80%;
+    margin: 0 auto;
+    font-style: italic;
+
+}

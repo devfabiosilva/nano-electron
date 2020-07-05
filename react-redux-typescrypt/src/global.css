@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+  font: 400 14px Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+
+  --background: #1e3c44;
+  background-color: var(--background);
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.4s initial;
+
+}
+
+body.dark {
+
+  --background: #1e3c44;
+  --background-content:#244c54; /* #22434a; */
+  --color: #e9f6fb;
+  --background-hovered: #3a6f7f;/* #294b52;*/
+  --primary: #a6df38;
+  --toggle-content: #244c54;/* #0d2830;*/
+  --button-content: #0d2830;
+  --notification-background: #445159;
+  --notification-background-alert: #c5c52cc4;
+  --notification-background-error:  #db4343;
+  --background-locked: rgba(160, 155, 155, 0.4);
+  --invalid-sig-color: #e94040;
+  --valid-sig-color: #89c90bee;
+  
+}
+
+body.light {
+
+  --background: #b5b6b7;/* #edeeef; */
+  --background-content: #f5f6f8; /* #fff; */
+  --color: #696969;
+  --background-hovered: #a3d839de;/*#f5f6f8;*/
+  --primary: #90d50b;
+  --toggle-content: #c7c7c7;/*#e5e8e5;*/
+  --button-content: #e5e8e5;
+  --notification-background: #6fd0ee;
+  --notification-background-alert: #e6d649f3;
+  --notification-background-error:  #ff8383;
+  --background-locked: rgba(202, 209, 228, 0.541);
+  --invalid-sig-color: #e94040;
+  --valid-sig-color: #668f14ee;
+
+}
+
+button {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color);
+  background-color: var(--button-content);
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: color 0.3s, background-color 0.3s;
+
+}
+  
+button:hover {
+
+  background-color: var(--background-hovered);
+  
+}
+
+button[disabled],
+input[disabled] {
+
+  background-color: #cccccc;
+  color: #6666662e;
+  
+}
+
+input[type=text],
+input[type=password] {
+
+  height: 28px;
+  padding: 3px 6px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: var(--background-content);
+  color: var(--color);
+
+}
+
+select {
+
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background-color: var(--background-content);
+  color: var(--color)
+
+}
+
+option {
+
+  cursor: pointer;
+  background-color: var(--background);
+
+}

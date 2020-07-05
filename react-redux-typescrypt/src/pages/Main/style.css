@@ -1,0 +1,36 @@
+.body-container {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto auto;
+    width: 100%;
+    min-height: 630px;
+
+}
+
+.main-container {
+
+    width: 1000px;/*971px;*/
+    height: 600px;
+    background-color: var(--background);
+    transition: background-color 0.4s initial;
+    color: var(--color);
+
+}
+
+.main-header {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.main-content {
+    background-color: var(--background-content);
+    margin: 20px;
+    width: 970px;
+    height: 500px;
+    border-radius: 20px;
+}

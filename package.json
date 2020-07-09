@@ -1,21 +1,22 @@
 {
-  "name": "electron-quick-start",
+  "name": "nano-electron",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Nano Electron. A cross-platform for Nano cryptocurrency Wallet",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/devfabiosilva/nano-electron",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Nano",
+    "myNanoJS",
+    "Blockchain",
+    "Cryptocurrency",
+    "Digital money"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Fábio Pereira da Silva",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^9.0.5"
   },

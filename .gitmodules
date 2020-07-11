@@ -1,0 +1,3 @@
+[submodule "system/mynanojs"]
+	path = system/mynanojs
+	url = https://github.com/devfabiosilva/myNanoJS.git

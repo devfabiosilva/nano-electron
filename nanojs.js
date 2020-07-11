@@ -2,12 +2,13 @@ const MY_NANO_JS = require('./system/mynanojs-linux-1.0-ia64');
 //const MY_NANO_JS = require('./system/mynanojs-linux-1.0-arm7l');
 //const MY_NANO_JS = require('./system/mynanojs-win-1.0-ia64');
 //const MY_NANO_JS = require('./system/mynanojs-mac-1.0-ia64');
-const MY_NANO_JS_DEFAULT_ERROR = {error: 2, reason: "Missing value"};
+//const MY_NANO_JS_DEFAULT_ERROR = {error: 2, reason: "Missing value"};
 const SUCCESS_MESSAGE = "Success";
 const COMMAND_ENCRYPTED_STREAM_TO_SEED = 1;
 const COMMAND_WALLET_TO_PUBLIC_KEY = 2;
 const COMMAND_CONVERT_BALANCE = 3;
 const COMMAND_SEED_TO_KEY_PAIR = 4;
+const COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR = 5;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -35,11 +36,9 @@ function stringToArrayBuffer(value) {
 
 module.exports = {
 
-    NANO_PREFIX: MY_NANO_JS.NANO_PREFIX,
-    XRB_PREFIX: MY_NANO_JS.XRB_PREFIX,
     commands(req, res) {
       let command;
-      let tmp1, tmp2, tmp3;
+      let tmp1, tmp2, tmp3, tmp4;
       let result;
       let arrayBuffer;
 
@@ -115,7 +114,7 @@ req = { command: number, balance: string, balance_type: number (Optional. If omm
 
          if (!tmp2)
             return res.json(sendDefaultError(6, "Missing: Balance"));
-
+//
          try {
             (tmp1)?(result = MY_NANO_JS.nanojs_convert_balance(tmp2, tmp1)):(result = MY_NANO_JS.nanojs_convert_balance(tmp2));
          } catch (e) {
@@ -151,8 +150,40 @@ req = { command: number, seed: string, wallet_number: number, prefix: string (op
 
       }
 
+      if (command === COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR) {
+/*
+req = { command: number, encrypted_stream: string, wallet_number: number, password: string, prefix: string(optional) }
+*/
+         tmp1 = verifyError(req.body.encrypted_stream);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(9, "Missing: Encrypted block"));
+
+         tmp1=stringToArrayBuffer(tmp1);
+
+         tmp2 = verifyError(req.body.wallet_number);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(10, "Missing: Wallet Number"));
+
+         tmp3 = verifyError(req.body.password);
+
+         if (!tmp3)
+            return res.json(sendDefaultError(11, "Missing: Password"));
+         
+         tmp4 = verifyError(req.body.prefix);
+
+         try {
+            (tmp4)?(result = MY_NANO_JS.nanojs_encrypted_stream_to_key_pair(tmp1, tmp3, tmp2, tmp4)):(result = MY_NANO_JS.nanojs_encrypted_stream_to_key_pair(tmp1, tmp3, tmp2));
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, key_pair: result});
+
+      }
+
       return res.json({ error: -2, reason: "Unknown command"});
    }
 
 }
-

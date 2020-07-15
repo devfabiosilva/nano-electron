@@ -7,7 +7,8 @@ import {
     NANO_PREFIX,
     UNKNOWN_MY_NANO_PHP_SERVER_ERROR,
     changeToNanoPrefix,
-    MY_NANO_PHP_VERIFY_SIG_MSG
+    MY_NANO_PHP_VERIFY_SIG_MSG,
+    NANO_JS_COMMANDS
 
 } from '../utils';
 
@@ -27,18 +28,33 @@ import {
     SIGNED_MESSAGE,
     OPEN_ENCRYPTED_SEED_RESPONSE,
     WALLET_TO_PUBLIC_KEY,
-    RAW2REAL_RESULT
+//    RAW2REAL_RESULT,
+    NANOJS_RAW2REAL_RESULT,
+    MY_NANO_JS_ERROR
 
 } from '../utils/wallet_interface';
 
 const MY_NANO_PHP_URL = 'http://localhost';
+const MY_NANO_JS_URL = 'http://localhost';
+const MY_NANO_JS_URL_PORT = 8176;
 
+// Take away this api in future
 const api = axios.create({
     baseURL: MY_NANO_PHP_URL,
     headers:    {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
     validateStatus: function () {
+        return true;
+    }
+});
+
+const api_c_binding = axios.create({
+    baseURL: `${MY_NANO_JS_URL}:${MY_NANO_JS_URL_PORT}`,
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    validateStatus: function() {
         return true;
     }
 });
@@ -56,7 +72,7 @@ const api_rpc = axios.create(
         }
     }
 )
-
+/* take away */
 export async function my_nano_php_api(send: any, function_name: string) {
     let data: any;
 
@@ -68,21 +84,34 @@ export async function my_nano_php_api(send: any, function_name: string) {
         {error: "-1", reason: "Something went wrong with " + function_name};
 
 }
-
-export async function my_nano_php_nano2pk(wallet: string) {
-
+////
+export async function my_nano_js_api(send: any, function_name: string) {
     let data: any;
 
-    data = await my_nano_php_api(`command=nano2pk&wallet=${wallet}`, "my_nano_php_nano2pk");
+    await api_c_binding.post('/data', send).then(
+        (res) => data = res.data
+    );
 
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-
+    return (data)?(data.error === 0)?data:{error: "-2", reason: "Unexpected format"}:
+        {error: "-1", reason: "Something went wrong with " + function_name};
 }
 
+export async function my_nano_js_raw2real(balance: string) {
+    let data: NANOJS_RAW2REAL_RESULT|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_CONVERT_BALANCE,
+        balance
+    }, "my_nano_js_raw2real");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+
+    });
+}
+
+///
+/*
 export async function my_nano_php_raw2real(balance: string) {
  
     let data: RAW2REAL_RESULT|MY_NANO_PHP_ERROR;
@@ -96,7 +125,7 @@ export async function my_nano_php_raw2real(balance: string) {
     });
 
 }
-
+*/
 export async function my_nano_php_open_encrypted_seed(block: string, password: string)
 {
     let data: OPEN_ENCRYPTED_SEED_RESPONSE|MY_NANO_PHP_ERROR;

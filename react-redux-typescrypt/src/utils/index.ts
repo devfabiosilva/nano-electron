@@ -36,6 +36,10 @@ export const NOTIFICATION_TIME = {
 
 }
 
+export const NANO_JS_COMMANDS = {
+    COMMAND_CONVERT_BALANCE: 3
+}
+
 export function changeToNanoPrefix(wallet: string): string {
 
     if ( wallet.indexOf(XRB_PREFIX) > -1 )

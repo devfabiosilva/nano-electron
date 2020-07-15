@@ -13,11 +13,12 @@ import Dialog from '../Dialog';
 import {
 
   nano_rpc_account_balance,
-  my_nano_php_raw2real,
+  /*my_nano_php_raw2real,*/
   nano_rpc_account_representative,
   nano_rpc_account_frontier,
   my_nano_php_send_receive_money,
   nano_rpc_get_pending,
+  my_nano_js_raw2real,
 
 } from '../../service';
 
@@ -62,7 +63,8 @@ import {
   PENDING_AMOUNT_TO_POCKET, 
   NOTIFY_MESSAGE,
   WALLET_FROM,
-  MY_NANO_PHP_ERROR
+  MY_NANO_PHP_ERROR,
+  NANOJS_RAW2REAL_RESULT
 
 } from '../../utils/wallet_interface';
 
@@ -227,13 +229,19 @@ export function Wallet(props: any) {
           (data: any) => {
             (data)?
               (data.balance)?
-                my_nano_php_raw2real(data.balance).then(
+                //my_nano_php_raw2real(data.balance).then(
+                my_nano_js_raw2real(data.balance).then(
                   (d: any) => {
-                    my_nano_php_raw2real(data.pending).then(
+                    //my_nano_php_raw2real(data.pending).then(
+                    my_nano_js_raw2real(data.pending).then(
                       (pending_balance: any) => {
                         props.setMyWallet({
+                          /*
                           balance: d.real_balance,
                           pending: pending_balance.real_balance
+                          */
+                          balance: (d as NANOJS_RAW2REAL_RESULT).converted_balance,
+                          pending: (pending_balance as NANOJS_RAW2REAL_RESULT).converted_balance
                         });
                         setBalance(props.state.balance);
                         setPendingAccount(props.state.pending);
@@ -376,9 +384,11 @@ export function Wallet(props: any) {
           if (pending_res.amount_raw) {
 
             if ( (block = pending_res.block ) ) 
-              my_nano_php_raw2real(pending_res.amount_raw).then(
+              //my_nano_php_raw2real(pending_res.amount_raw).then(
+              my_nano_js_raw2real(pending_res.amount_raw).then(
                 (raw2real_res: any) => {
-                    if ( (amount = raw2real_res.real_balance)) {
+                    //if ( (amount = raw2real_res.real_balance)) {
+                    if ( (amount = (raw2real_res as NANOJS_RAW2REAL_RESULT).converted_balance as string)) {
                       setOpenPendingBlock({
 
                         amount,

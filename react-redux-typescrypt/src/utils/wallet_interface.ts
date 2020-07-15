@@ -44,6 +44,7 @@ export interface MY_NANO_PHP_PK2ADDRESS {
     public_key: string
 }
 
+/* Take away */
 export interface MY_NANO_PHP_ERROR {
 
     error: string|number,
@@ -202,7 +203,7 @@ export interface WALLET_TO_PUBLIC_KEY {
     public_key?: string
 
 }
-
+/* Take away */
 export interface RAW2REAL_RESULT {
 
     error?: string|number,
@@ -211,3 +212,22 @@ export interface RAW2REAL_RESULT {
     real_balance?: string
 
 }
+
+//
+export interface MY_NANO_JS_ERROR {
+
+    error: string|number,
+    reason: string
+
+}
+
+export interface NANOJS_RAW2REAL_RESULT {
+
+    error?: string|number,
+    reason?: string,
+    balance?: string,
+    converted_balance?: string
+
+}
+
+//

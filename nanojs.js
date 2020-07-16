@@ -135,7 +135,7 @@ req = { command: number, seed: string, wallet_number: number, prefix: string (op
 
          tmp2 = verifyError(req.body.wallet_number);
 
-         if (!tmp2)
+         if (tmp2 === false)
             return res.json(sendDefaultError(8, "Missing: Wallet number"));
 
          tmp3=verifyError(req.body.prefix);

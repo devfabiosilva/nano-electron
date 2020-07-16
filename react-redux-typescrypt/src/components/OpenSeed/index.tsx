@@ -29,7 +29,8 @@ import {
     NOTIFY_MESSAGE,
     ENCRYPTED_STREAM_RESULT,
     MY_NANO_PHP_ERROR,
-    MY_NANO_PHP_SEED2KEYPAIR,
+    /*MY_NANO_PHP_SEED2KEYPAIR,*/
+    MY_NANO_JS_SEED2KEYPAIR,
     WALLET_TO_PUBLIC_KEY
 
 } from '../../utils/wallet_interface';
@@ -107,8 +108,8 @@ export function OpenSeed(props: any) {
                                 wallet_number: 0,
                                 encrypted_block: (result as ENCRYPTED_STREAM_RESULT).encrypted_stream as string,
                                 origin: WALLET_FROM.FROM_BIP39,
-                                public_key: (res as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key,
-                                wallet: (res as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet
+                                public_key: (res as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key,
+                                wallet: (res as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet
         
                             } as my_wallet);
 

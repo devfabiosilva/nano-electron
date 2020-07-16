@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import { 
 
     my_nano_php_open_brainwallet,
-    my_nano_php_seed2keypair,
-    my_nano_php_seed_to_encrypted_stream
+    /*my_nano_php_seed2keypair,*/
+    my_nano_php_seed_to_encrypted_stream,
+    my_nano_js_seed2keypair
 
 } from '../../service';
 
@@ -102,7 +103,8 @@ export function Brainwallet(props: any) {
 
                 } as NOTIFY_MESSAGE);
 
-                my_nano_php_seed2keypair(0, (result as BRAINWALLET_RESPONSE).extracted.result.seed).then(
+                //my_nano_php_seed2keypair(0, (result as BRAINWALLET_RESPONSE).extracted.result.seed).then(
+                my_nano_js_seed2keypair(0, (result as BRAINWALLET_RESPONSE).extracted.result.seed).then(
                     (seed2keypair: any) => {
                         
                         props.setNotifyMessage({

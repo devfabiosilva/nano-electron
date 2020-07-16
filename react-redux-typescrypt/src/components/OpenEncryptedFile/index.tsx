@@ -14,7 +14,8 @@ import {
   
   my_wallet,
   WALLET_FROM,
-  MY_NANO_PHP_SEED2KEYPAIR,
+  /*MY_NANO_PHP_SEED2KEYPAIR,*/
+  MY_NANO_JS_SEED2KEYPAIR,
   NOTIFY_MESSAGE
 
 } from '../../utils/wallet_interface';
@@ -95,8 +96,8 @@ export function OpenEncryptedWalletFile(props: any) {
               origin: WALLET_FROM.FROM_ENCRYPTED_FILE,
               encrypted_block: encrypted_data,
               wallet_number: 0,
-              wallet: (unencrypted_data_result as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet,
-              public_key: (unencrypted_data_result as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key,
+              wallet: (unencrypted_data_result as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet,
+              public_key: (unencrypted_data_result as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key,
 
             } as my_wallet
           ),

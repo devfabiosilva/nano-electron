@@ -30,7 +30,8 @@ import {
     WALLET_TO_PUBLIC_KEY,
 //    RAW2REAL_RESULT,
     NANOJS_RAW2REAL_RESULT,
-    MY_NANO_JS_ERROR
+    MY_NANO_JS_ERROR,
+    MY_NANO_JS_SEED2KEYPAIR
 
 } from '../utils/wallet_interface';
 
@@ -84,16 +85,22 @@ export async function my_nano_php_api(send: any, function_name: string) {
         {error: "-1", reason: "Something went wrong with " + function_name};
 
 }
-////
+//// BEGIN NodeJS C bindings API
 export async function my_nano_js_api(send: any, function_name: string) {
     let data: any;
 
     await api_c_binding.post('/data', send).then(
         (res) => data = res.data
     );
-
+/*
     return (data)?(data.error === 0)?data:{error: "-2", reason: "Unexpected format"}:
         {error: "-1", reason: "Something went wrong with " + function_name};
+*/
+    if (data)
+        return data;
+    else
+        return {error: "-1", reason: "Something went wrong with " + function_name};
+
 }
 
 export async function my_nano_js_raw2real(balance: string) {
@@ -123,19 +130,22 @@ export async function  my_nano_js_open_encrypted_seed(block: string, password: s
     });
 }
 
-///
-export async function my_nano_php_seed2keypair(wallet_number: number, seed: string, prefix:string = NANO_PREFIX)
-{
-    let data: MY_NANO_PHP_SEED2KEYPAIR|MY_NANO_PHP_ERROR;
+export async function my_nano_js_seed2keypair(wallet_number: number, seed: string, prefix:string = NANO_PREFIX) {
+    let data: MY_NANO_JS_SEED2KEYPAIR|MY_NANO_JS_ERROR;
 
-    data = await my_nano_php_api(`command=seed2key_pair&seed=${seed}&wallet_number=${wallet_number.toString()}&prefix=${prefix}`, "my_nano_php_seed2keypair");
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_SEED_TO_KEY_PAIR,
+        seed,
+        wallet_number,
+        prefix
+    }, "my_nano_js_seed2keypair");
 
     return new Promise((res, error) => {
-        
-        return (data.error === "0")?res(data as MY_NANO_PHP_SEED2KEYPAIR):error(data as MY_NANO_PHP_ERROR);
-
+        return (data.error === 0)?res(data):error(data);
     });
 }
+
+/// END NodeJS C bindings API
 
 export async function my_nano_php_public_key2address(public_key: string, prefix:string = NANO_PREFIX)
 {

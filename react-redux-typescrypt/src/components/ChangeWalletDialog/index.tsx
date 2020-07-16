@@ -5,7 +5,8 @@ import {
     NOTIFY_MESSAGE, 
     my_wallet, 
     MY_NANO_PHP_ERROR, 
-    MY_NANO_PHP_SEED2KEYPAIR 
+    /*MY_NANO_PHP_SEED2KEYPAIR, */
+    MY_NANO_JS_SEED2KEYPAIR
 
 } from '../../utils/wallet_interface';
 
@@ -99,9 +100,14 @@ export function ChangeWallet(props: any) {
 
                 props.changeMyWallet({
 
+                    wallet_number: Number.parseFloat((keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet_number as string),
+                    public_key: (keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key,
+                    wallet: (keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet,
+                    /*
                     wallet_number: Number.parseFloat((keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet_number as string),
                     public_key: (keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key,
-                    wallet: (keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet,
+                    wallet: (keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet, 
+                    */
                     balance: "",
                     frontier: "",
                     bip39: "",

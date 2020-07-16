@@ -17,10 +17,11 @@ import {
     NOTIFY_MESSAGE, 
     SIGNATURE_VERIFY,
     MY_NANO_PHP_ERROR,
-    MY_NANO_PHP_SEED2KEYPAIR,
+    /*MY_NANO_PHP_SEED2KEYPAIR,*/
     SIGNED_MESSAGE,
     WALLET_FROM,
-    OPEN_ENCRYPTED_SEED_RESPONSE
+    OPEN_ENCRYPTED_SEED_RESPONSE,
+    MY_NANO_JS_SEED2KEYPAIR
 
 } from '../../utils/wallet_interface';
 
@@ -209,7 +210,7 @@ export function SignMessage(props: any) {
             ).then(
                 (privKey: any) => {
 
-                    privateKey = `${(privKey as MY_NANO_PHP_SEED2KEYPAIR).key_pair.private_key}${(privKey as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key}`;
+                    privateKey = `${(privKey as MY_NANO_JS_SEED2KEYPAIR).key_pair.private_key}${(privKey as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key}`;
 
                     props.newNotification({
 

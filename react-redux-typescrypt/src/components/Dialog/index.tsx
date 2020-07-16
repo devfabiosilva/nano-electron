@@ -14,7 +14,7 @@ import {
 
     WALLET_FROM, 
     my_wallet, 
-    MY_NANO_PHP_SEED2KEYPAIR, 
+    MY_NANO_JS_SEED2KEYPAIR, 
     NOTIFY_MESSAGE,
     MY_NANO_PHP_ERROR
 
@@ -95,14 +95,14 @@ function Dialog(props: any) {
                 if ( props.nano_wallet.origin === WALLET_FROM.FROM_KEY_PAIR )
                     props.setMyWallet({
 
-                        private_key: (encrypted_block_res as MY_NANO_PHP_SEED2KEYPAIR).key_pair.private_key,
+                        private_key: (encrypted_block_res as MY_NANO_JS_SEED2KEYPAIR).key_pair.private_key,
 
                     } as my_wallet);
                 else
                     props.setMyWallet({
 
-                        private_key: (encrypted_block_res as MY_NANO_PHP_SEED2KEYPAIR).key_pair.private_key,
-                        public_key: (encrypted_block_res as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key
+                        private_key: (encrypted_block_res as MY_NANO_JS_SEED2KEYPAIR).key_pair.private_key,
+                        public_key: (encrypted_block_res as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key
 
                     } as my_wallet);
 

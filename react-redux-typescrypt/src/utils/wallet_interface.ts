@@ -25,7 +25,7 @@ export interface SEED_AND_BIP39 {
     seed?: string,
     bip39?: string
 }
-
+/* Take Away */
 export interface MY_NANO_PHP_SEED2KEYPAIR {
     error: string|number,
     reason: string,
@@ -229,5 +229,19 @@ export interface NANOJS_RAW2REAL_RESULT {
     converted_balance?: string
 
 }
+
+export interface MY_NANO_JS_SEED2KEYPAIR {
+
+    error: string|number,
+    reason: string,
+    key_pair: {
+        private_key: string,
+        public_key: string,
+        wallet_number: number|string,
+        wallet: string
+    }
+
+}
+
 
 //

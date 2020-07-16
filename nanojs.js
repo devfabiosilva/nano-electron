@@ -64,12 +64,12 @@ module.exports = {
          arrayBuffer = stringToArrayBuffer(tmp1);
 
          try {
-            result = MY_NANO_JS.nanojs_encrypted_stream_to_seed(arrayBuffer, tmp2);
+            result = MY_NANO_JS.nanojs_encrypted_stream_to_seed(arrayBuffer, tmp2, 'dictionary.dic');
          } catch (e) {
             return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
          }
 
-         return res.json({error: 0, reason: SUCCESS_MESSAGE, seed: result.seed});
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, result: result});
 
       }
 

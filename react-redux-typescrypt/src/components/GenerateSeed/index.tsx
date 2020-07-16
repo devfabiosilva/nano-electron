@@ -15,7 +15,8 @@ import {
 import { 
 
     my_nano_php_generate_encrypted_seed, 
-    my_nano_php_open_encrypted_seed 
+    /* my_nano_php_open_encrypted_seed */
+    my_nano_js_open_encrypted_seed
 
 } from '../../service';
 
@@ -123,7 +124,8 @@ export function GenerateSeed(props: any) {
 
                 } as NOTIFY_MESSAGE);
 
-                my_nano_php_open_encrypted_seed((res as GENERATED_ENCRYPTED_SEED).encrypted_seed, password_value).then(
+                //my_nano_php_open_encrypted_seed((res as GENERATED_ENCRYPTED_SEED).encrypted_seed, password_value).then(
+                my_nano_js_open_encrypted_seed((res as GENERATED_ENCRYPTED_SEED).encrypted_seed, password_value).then(
                     (result: any) => {
 
                         setSeedAndBip39((result as OPEN_ENCRYPTED_SEED_RESPONSE).result);

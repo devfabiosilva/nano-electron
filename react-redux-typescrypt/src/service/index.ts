@@ -106,39 +106,24 @@ export async function my_nano_js_raw2real(balance: string) {
 
     return new Promise((res, error) => {
         return (data.error === 0)?res(data):error(data);
+    });
+}
 
+export async function  my_nano_js_open_encrypted_seed(block: string, password: string) {
+    let data: OPEN_ENCRYPTED_SEED_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_ENCRYPTED_STREAM_TO_SEED,
+        encrypted_stream: block,
+        password
+    }, "my_nano_js_open_encrypted_seed");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
     });
 }
 
 ///
-/*
-export async function my_nano_php_raw2real(balance: string) {
- 
-    let data: RAW2REAL_RESULT|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=raw2real&balance=${balance}`, "my_nano_php_raw2real");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-
-}
-*/
-export async function my_nano_php_open_encrypted_seed(block: string, password: string)
-{
-    let data: OPEN_ENCRYPTED_SEED_RESPONSE|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=encrypted_stream_to_seed&block=${block}&password=${password}`, "my_nano_php_open_encrypted_seed");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
-
 export async function my_nano_php_seed2keypair(wallet_number: number, seed: string, prefix:string = NANO_PREFIX)
 {
     let data: MY_NANO_PHP_SEED2KEYPAIR|MY_NANO_PHP_ERROR;

@@ -36,7 +36,8 @@ import {
     my_nano_php_verify_message_sig, 
     my_nano_php_encrypted_stream_to_key_pair, 
     my_nano_php_sign_message,
-    my_nano_php_open_encrypted_seed
+    /*my_nano_php_open_encrypted_seed*/
+    my_nano_js_open_encrypted_seed
 
 } from '../../service';
 
@@ -145,7 +146,8 @@ export function SignMessage(props: any) {
         } as NOTIFY_MESSAGE);
 
         ((props.wallet as my_wallet).origin === WALLET_FROM.FROM_KEY_PAIR)?
-            my_nano_php_open_encrypted_seed((props.wallet as my_wallet).encrypted_block as string, tokenPasswordInput.value).then(
+            //my_nano_php_open_encrypted_seed((props.wallet as my_wallet).encrypted_block as string, tokenPasswordInput.value).then(
+                my_nano_js_open_encrypted_seed((props.wallet as my_wallet).encrypted_block as string, tokenPasswordInput.value).then(
                 (unencryptedSeedResult: any) => {
 
                     privateKey = `${(unencryptedSeedResult as OPEN_ENCRYPTED_SEED_RESPONSE).result.seed}${(props.wallet as my_wallet).public_key}`;

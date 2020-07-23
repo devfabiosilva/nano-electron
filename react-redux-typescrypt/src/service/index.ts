@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { NANO_NODE_URL } from '../utils/secret';
+import { NANO_NODE_URL } from '../utils/nodes';
 
 import {
 
@@ -14,7 +14,6 @@ import {
 
 import { 
 
-    PUBLIC_KEY2ADDRESS, 
     MY_NANO_PHP_ERROR, 
     BRAINWALLET_RESPONSE, 
     MY_NANO_PHP_SEED2KEYPAIR,
@@ -28,7 +27,6 @@ import {
     SIGNED_MESSAGE,
     OPEN_ENCRYPTED_SEED_RESPONSE,
     WALLET_TO_PUBLIC_KEY,
-//    RAW2REAL_RESULT,
     NANOJS_RAW2REAL_RESULT,
     MY_NANO_JS_ERROR,
     MY_NANO_JS_SEED2KEYPAIR
@@ -92,10 +90,7 @@ export async function my_nano_js_api(send: any, function_name: string) {
     await api_c_binding.post('/data', send).then(
         (res) => data = res.data
     );
-/*
-    return (data)?(data.error === 0)?data:{error: "-2", reason: "Unexpected format"}:
-        {error: "-1", reason: "Something went wrong with " + function_name};
-*/
+
     if (data)
         return data;
     else
@@ -144,9 +139,24 @@ export async function my_nano_js_seed2keypair(wallet_number: number, seed: strin
         return (data.error === 0)?res(data):error(data);
     });
 }
+/*
+export async function my_nano_js_public_key2address(public_key: string, prefix:string = NANO_PREFIX) {
+    
+    let data: PUBLIC_KEY2ADDRESS|MY_NANO_JS_ERROR;
 
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_PUBLIC_KEY_TO_WALLET,
+        public_key,
+        prefix
+    }, "my_nano_js_public_key2address");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+*/
 /// END NodeJS C bindings API
-
+/*
 export async function my_nano_php_public_key2address(public_key: string, prefix:string = NANO_PREFIX)
 {
     let data: PUBLIC_KEY2ADDRESS|MY_NANO_PHP_ERROR;
@@ -159,7 +169,7 @@ export async function my_nano_php_public_key2address(public_key: string, prefix:
 
     });
 }
-
+*/
 export async function my_nano_php_open_brainwallet(text: string, salt:string)
 {
     let data: BRAINWALLET_RESPONSE|MY_NANO_PHP_ERROR;

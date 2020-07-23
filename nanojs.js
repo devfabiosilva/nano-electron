@@ -9,6 +9,7 @@ const COMMAND_WALLET_TO_PUBLIC_KEY = 2;
 const COMMAND_CONVERT_BALANCE = 3;
 const COMMAND_SEED_TO_KEY_PAIR = 4;
 const COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR = 5;
+const COMMAND_PUBLIC_KEY_TO_WALLET = 6;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -180,6 +181,25 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, key_pair: result});
+
+      }
+
+      if (command === COMMAND_PUBLIC_KEY_TO_WALLET) {
+
+         tmp1 = verifyError(req.body.public_key);
+
+         if (tmp1 === false)
+            return res.json(sendDefaultError(12, "Missing public key"));
+
+         tmp2 = verifyError(req.body.prefix);
+
+         try {
+            (tmp2)?(result = MY_NANO_JS.nanojs_public_key_to_wallet(tmp1, tmp2)):(result = MY_NANO_JS.nanojs_public_key_to_wallet(tmp1));
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, wallet: result, public_key: tmp1});
 
       }
 

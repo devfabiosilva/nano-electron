@@ -10,6 +10,7 @@ const COMMAND_CONVERT_BALANCE = 3;
 const COMMAND_SEED_TO_KEY_PAIR = 4;
 const COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR = 5;
 const COMMAND_PUBLIC_KEY_TO_WALLET = 6;
+const COMMAND_BRAINWALLET = 7;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -186,6 +187,9 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
 
       if (command === COMMAND_PUBLIC_KEY_TO_WALLET) {
 
+/*
+ req={public_key: string, prefix: string(optional)}
+*/
          tmp1 = verifyError(req.body.public_key);
 
          if (tmp1 === false)
@@ -200,6 +204,40 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, wallet: result, public_key: tmp1});
+
+      }
+
+      if (command === COMMAND_BRAINWALLET) {
+/*
+ req = {text: string, salt: string}
+*/
+         tmp1 = verifyError(req.body.text);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(13, "Missing brainwallet text"));
+
+         tmp2 = verifyError(req.body.salt);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(14, "Missing salt"));
+
+         try {
+            result = MY_NANO_JS.nanojs_extract_seed_from_brainwallet(tmp1, tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({
+             error: 0,
+             reason: SUCCESS_MESSAGE,
+             text: tmp1,
+             salt: tmp2,
+             extracted: {
+                result: {
+                   seed: result.seed
+                },
+                warning_msg: result.warning_message
+             }});
 
       }
 

@@ -139,49 +139,22 @@ export async function my_nano_js_seed2keypair(wallet_number: number, seed: strin
         return (data.error === 0)?res(data):error(data);
     });
 }
-/*
-export async function my_nano_js_public_key2address(public_key: string, prefix:string = NANO_PREFIX) {
-    
-    let data: PUBLIC_KEY2ADDRESS|MY_NANO_JS_ERROR;
+
+export async function my_nano_js_open_brainwallet(text: string, salt:string) {
+    let data: BRAINWALLET_RESPONSE|MY_NANO_JS_ERROR;
 
     data = await my_nano_js_api({
-        command: NANO_JS_COMMANDS.COMMAND_PUBLIC_KEY_TO_WALLET,
-        public_key,
-        prefix
-    }, "my_nano_js_public_key2address");
+        command: NANO_JS_COMMANDS.COMMAND_BRAINWALLET,
+        text,
+        salt
+    }, "my_nano_js_open_brainwallet");
 
     return new Promise((res, error) => {
         return (data.error === 0)?res(data):error(data);
     });
 }
-*/
+
 /// END NodeJS C bindings API
-/*
-export async function my_nano_php_public_key2address(public_key: string, prefix:string = NANO_PREFIX)
-{
-    let data: PUBLIC_KEY2ADDRESS|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=pk2nano&seed&pk=${public_key}&prefix=${prefix}`, "my_nano_php_public_key2address");
-
-    return new Promise((res, error) => {
-        
-        return (data.error === "0")?res(data as PUBLIC_KEY2ADDRESS):error(data as MY_NANO_PHP_ERROR);
-
-    });
-}
-*/
-export async function my_nano_php_open_brainwallet(text: string, salt:string)
-{
-    let data: BRAINWALLET_RESPONSE|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=brainwallet&text=${text}&salt=${salt}`, "my_nano_php_open_brainwallet");
-
-    return new Promise((res, error) => {
-        
-        return (data.error === "0")?res(data as BRAINWALLET_RESPONSE):error(data as MY_NANO_PHP_ERROR);
-
-    });
-}
 
 export async function my_nano_php_generate_encrypted_seed(entropy: string, password: string)
 {

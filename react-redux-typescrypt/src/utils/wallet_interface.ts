@@ -89,7 +89,7 @@ export interface PUBLIC_KEY2ADDRESS {
     public_key: string,
 
 }
-
+/*
 export interface BRAINWALLET_RESPONSE {
 
     error: string|number,
@@ -104,6 +104,23 @@ export interface BRAINWALLET_RESPONSE {
       warning_msg: string
     },
     warning: string
+
+}
+*/
+export interface BRAINWALLET_RESPONSE {
+
+    error: string|number,
+    reason: string,
+    text: string,
+    salt: string,
+    extracted: {
+      result: {
+        seed: string,
+        bip39?: string
+      },
+      warning_msg: string
+    },
+    warning?: string
 
 }
 

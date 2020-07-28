@@ -14,9 +14,9 @@ import {
 
 import { 
 
-    my_nano_php_generate_encrypted_seed, 
+   /* my_nano_php_generate_encrypted_seed, */
     /* my_nano_php_open_encrypted_seed */
-    my_nano_js_open_encrypted_seed
+    my_nano_js_open_encrypted_seed, my_nano_js_generate_encrypted_seed
 
 } from '../../service';
 
@@ -113,7 +113,7 @@ export function GenerateSeed(props: any) {
             timeout: 8000
 
         } as NOTIFY_MESSAGE);
-        my_nano_php_generate_encrypted_seed(options.value, password_value).then(
+        my_nano_js_generate_encrypted_seed(options.value, password_value).then(
             (res: any) => {
 
                 setEncryptedBlock((res as GENERATED_ENCRYPTED_SEED).encrypted_seed);

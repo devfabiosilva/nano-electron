@@ -29,7 +29,8 @@ import {
     WALLET_TO_PUBLIC_KEY,
     NANOJS_RAW2REAL_RESULT,
     MY_NANO_JS_ERROR,
-    MY_NANO_JS_SEED2KEYPAIR
+    MY_NANO_JS_SEED2KEYPAIR,
+    ENTROPY_TYPE
 
 } from '../utils/wallet_interface';
 
@@ -154,21 +155,39 @@ export async function my_nano_js_open_brainwallet(text: string, salt:string) {
     });
 }
 
-/// END NodeJS C bindings API
+export async function my_nano_js_generate_encrypted_seed(entropy: string, password: string) {
+    let data: GENERATED_ENCRYPTED_SEED|MY_NANO_JS_ERROR;
+    let entropyNumber: number;
 
-export async function my_nano_php_generate_encrypted_seed(entropy: string, password: string)
-{
-    let data: GENERATED_ENCRYPTED_SEED|MY_NANO_PHP_ERROR
-
-    data = await my_nano_php_api(`command=gen_seed_to_encrypted_stream&entropy=${entropy}&password=${password}`, "my_nano_php_generate_encrypted_seed");
+    switch (entropy) {
+        case ENTROPY_TYPE.EXCELENT:
+            entropyNumber = 1476885281;
+            break;
+        case ENTROPY_TYPE.GOOD:
+            entropyNumber = 1472531015;
+            break;
+        case ENTROPY_TYPE.NOT_ENOUGH:
+            entropyNumber = 1471001808;
+            break;
+        case ENTROPY_TYPE.NOT_RECOMMENDED:
+            entropyNumber = 1470003345;
+            break;
+        default:
+            entropyNumber = 1477682819;
+    }
+   
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM,
+        entropy: entropyNumber,
+        password
+    }, "my_nano_js_generate_encrypted_seed");
 
     return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
+        return (data.error === 0)?res(data):error(data);
     });
 }
 
+/// END NodeJS C bindings API
 
 export async function my_nano_php_public_key_to_wallet(public_key:string, prefix: string = NANO_PREFIX)
 {

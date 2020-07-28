@@ -11,6 +11,7 @@ const COMMAND_SEED_TO_KEY_PAIR = 4;
 const COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR = 5;
 const COMMAND_PUBLIC_KEY_TO_WALLET = 6;
 const COMMAND_BRAINWALLET = 7;
+const COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM = 8;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -239,6 +240,29 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
                 warning_msg: result.warning_message
              }});
 
+      }
+
+      if (command === COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM) {
+/*
+ req = {entropy: number, password: string}
+*/
+         tmp1 = verifyError(req.body.entropy);
+
+         if (tmp1 === false)
+            return res.json(sendDefaultError(15, "Missing entropy value"));
+
+         tmp2 = verifyError(req.body.password);
+
+         if (tmp2 === false)
+            return res.json(sendDefaultError(16, "Missing password"));
+
+         try {
+            result = MY_NANO_JS.nanojs_gen_seed_to_encrypted_stream(tmp1, tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, encrypted_seed: Buffer.from(result).toString('hex')});
       }
 
       return res.json({ error: -2, reason: "Unknown command"});

@@ -42,7 +42,8 @@ export const NANO_JS_COMMANDS = {
     COMMAND_SEED_TO_KEY_PAIR: 4,
     COMMAND_PUBLIC_KEY_TO_WALLET: 6,
     COMMAND_BRAINWALLET: 7,
-    COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM: 8
+    COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM: 8,
+    COMMAND_COMPARE: 10
 }
 
 export function changeToNanoPrefix(wallet: string): string {

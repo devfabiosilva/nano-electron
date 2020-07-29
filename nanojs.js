@@ -12,6 +12,7 @@ const COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR = 5;
 const COMMAND_PUBLIC_KEY_TO_WALLET = 6;
 const COMMAND_BRAINWALLET = 7;
 const COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM = 8;
+const COMMAND_COMPARE = 10;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -41,7 +42,7 @@ module.exports = {
 
     commands(req, res) {
       let command;
-      let tmp1, tmp2, tmp3, tmp4;
+      let tmp1, tmp2, tmp3, tmp4, tmp5;
       let result;
       let arrayBuffer;
 
@@ -263,6 +264,93 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, encrypted_seed: Buffer.from(result).toString('hex')});
+      }
+
+      if (command === COMMAND_COMPARE) {
+/*
+ req = {valuea: string, typea: string, valueb: string, typeb: string, condition: string}
+*/
+         tmp1 = verifyError(req.body.value_a);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(17, "Missing A value"));
+
+         tmp2 = verifyError(req.body.value_b);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(18, "Missing B value"));
+
+         tmp3 = verifyError(req.body.type_a);
+
+         if (!tmp3)
+            return res.json(sendDefaultError(19, "Invalid/Unknown A big number type"));
+
+         switch (tmp3) {
+            case "real":
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_REAL_STRING;
+               break;
+            case "raw":
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_STRING;
+               break;
+            case "hex":
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_128;
+               break;
+            default:
+               return res.json(sendDefaultError(22, `Invalid A type value: ${tmp3}`));
+         }
+
+         tmp4 = verifyError(req.body.type_b);
+
+         if (!tmp4)
+            return res.json(sendDefaultError(21, "Invalid/Unknown B big number type"));
+
+         switch (tmp4) {
+            case "real":
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_REAL_STRING;
+               break;
+            case "raw":
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_STRING;
+               break;
+            case "hex":
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_128;
+               break;
+            default:
+               return res.json(sendDefaultError(22, `Invalid B type value: ${tmp4}`));
+         }
+
+         tmp5 = verifyError(req.body.condition);
+
+         if (!tmp5)
+            return res.json(sendDefaultError(21, "Invalid/Unknown condition"));
+
+         switch (tmp5) {
+            case "gt":
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_GT;
+               break;
+            case "lt":
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_LT;
+               break;
+            case "eq":
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_EQ;
+               break;
+            case "geq":
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_GEQ;
+               break;
+            case "leq":
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_LEQ;
+               break;
+            default:
+               return res.json(sendDefaultError(22, `Invalid condition: ${tmp5}`));
+         }
+
+         try {
+            result = MY_NANO_JS.nanojs_compare(tmp1, tmp2, tmp3 + tmp4, tmp5);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, value_a: tmp1, value_b: tmp2, result: (result)?1:0});
+
       }
 
       return res.json({ error: -2, reason: "Unknown command"});

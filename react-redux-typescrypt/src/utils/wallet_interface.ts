@@ -159,15 +159,15 @@ export interface BLOCK_RESPONSE {
     block: string
 
 }
-
+/*
 export interface BIG_NUMBER_COMPARE_RESPONSE {
     error: string|number,
     reason: string,
     value_a: string,
     value_b: string,
-    result: string|number
+    result: number
 }
-
+*/
 export interface NEXT_PENDING_BLOCK_RESPONSE {
     block: string,
     amount_raw: string,

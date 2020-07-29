@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 
 import { 
 
-    my_nano_php_public_key_to_wallet,
+    my_nano_js_public_key_to_wallet,
     my_nano_php_bip39_to_encrypted_stream,
     my_nano_php_encrypted_stream_to_key_pair,
     my_nano_php_seed_to_encrypted_stream,
-    my_nano_php_wallet_to_public_key
+    my_nano_php_wallet_to_public_key,
 
 } from '../../service';
 
@@ -173,7 +173,7 @@ export function OpenSeed(props: any) {
         
                     } as NOTIFY_MESSAGE);
 
-                    my_nano_php_public_key_to_wallet(seed_value.substr(64)).then(
+                    my_nano_js_public_key_to_wallet(seed_value.substr(64)).then(
                         (public_key_to_wallet_res: any) => {
                             props.wallet_public_key({
         
@@ -266,7 +266,7 @@ export function OpenSeed(props: any) {
     
                 }
 
-                my_nano_php_public_key_to_wallet(seed_value).then(
+                my_nano_js_public_key_to_wallet(seed_value).then(
                     (public_key_to_wallet_res: any) => {
 
                         props.newNotification({

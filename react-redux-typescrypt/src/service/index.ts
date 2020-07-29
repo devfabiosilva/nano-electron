@@ -20,7 +20,7 @@ import {
     GENERATED_ENCRYPTED_SEED,
     PUBLIC_KEY_TO_WALLET_RESPONSE,
     my_wallet,
-    BIG_NUMBER_COMPARE_RESPONSE,
+    //BIG_NUMBER_COMPARE_RESPONSE,
     NEXT_PENDING_BLOCK_RESPONSE,
     ENCRYPTED_STREAM_RESULT,
     SIGNATURE_VERIFY,
@@ -187,33 +187,39 @@ export async function my_nano_js_generate_encrypted_seed(entropy: string, passwo
     });
 }
 
+export async function my_nano_js_public_key_to_wallet(public_key:string, prefix: string = NANO_PREFIX) {
+    let data: PUBLIC_KEY_TO_WALLET_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_PUBLIC_KEY_TO_WALLET,
+        public_key,
+        prefix
+    }, "my_nano_js_public_key_to_wallet");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+/*
+// remove in future
+export async function my_nano_js_compare(valueA: string, valueB: string, typeA: string, typeB: string, condition: string) {
+    let data: BIG_NUMBER_COMPARE_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_COMPARE,
+        value_a: valueA,
+        value_b: valueB,
+        type_a: typeA,
+        type_b: typeB,
+        condition
+    }, "my_nano_js_compare");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+*/
 /// END NodeJS C bindings API
-
-export async function my_nano_php_public_key_to_wallet(public_key:string, prefix: string = NANO_PREFIX)
-{
-    let data: PUBLIC_KEY_TO_WALLET_RESPONSE|MY_NANO_PHP_ERROR
-
-    data = await my_nano_php_api(`command=pk2nano&pk=${public_key}&prefix=${prefix}`, "my_nano_php_public_key_to_wallet");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
-
-export async function my_nano_php_compare(valueA: string, valueB: string, typeA: string, typeB: string, condition: string)
-{
-    let data: BIG_NUMBER_COMPARE_RESPONSE|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=compare&valuea=${valueA}&typea=${typeA}&valueb=${valueB}&typeb=${typeB}&compare=${condition}`, "my_nano_php_compare");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
 
 export async function my_nano_php_encrypted_stream_to_key_pair(
     

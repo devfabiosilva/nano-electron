@@ -20,7 +20,7 @@ import {
 
 } from '../../utils/wallet_interface';
 
-import { my_nano_php_encrypted_stream_to_key_pair } from '../../service';
+import { my_nano_js_encrypted_stream_to_key_pair } from '../../service';
 
 import { FiSkipBack, FiFile, FiUnlock } from 'react-icons/fi';
 import { NOTIFY_TYPE } from '../../utils';
@@ -88,7 +88,7 @@ export function OpenEncryptedWalletFile(props: any) {
     reader.onloadend = function () {
       encrypted_data = Buffer.from(reader.result as any).toString('hex');
 
-      my_nano_php_encrypted_stream_to_key_pair(0, password.value, encrypted_data).then(
+      my_nano_js_encrypted_stream_to_key_pair(0, password.value, encrypted_data).then(
         (unencrypted_data_result: any) =>
           props.wallet_public_key(
             {

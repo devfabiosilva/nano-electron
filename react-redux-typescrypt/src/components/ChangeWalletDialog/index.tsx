@@ -21,7 +21,7 @@ import {
 
 import { connect } from 'react-redux';
 import { NOTIFY_TYPE } from '../../utils';
-import { my_nano_php_encrypted_stream_to_key_pair } from '../../service';
+import { my_nano_js_encrypted_stream_to_key_pair } from '../../service';
 import './style.css';
 
 export function ChangeWallet(props: any) {
@@ -62,7 +62,7 @@ export function ChangeWallet(props: any) {
 
         }
 
-        num = Number.parseFloat(number_str);
+        num = Number.parseInt(number_str);
 
         if ( isNaN( num ) ) {
 
@@ -94,7 +94,7 @@ export function ChangeWallet(props: any) {
 
         }
 
-        my_nano_php_encrypted_stream_to_key_pair(num, password_str, (props.wallet as my_wallet).encrypted_block as string).then(
+        my_nano_js_encrypted_stream_to_key_pair(num, password_str, (props.wallet as my_wallet).encrypted_block as string).then(
 
             (keyPairResult: any) => {
 
@@ -103,11 +103,6 @@ export function ChangeWallet(props: any) {
                     wallet_number: Number.parseFloat((keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet_number as string),
                     public_key: (keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.public_key,
                     wallet: (keyPairResult as MY_NANO_JS_SEED2KEYPAIR).key_pair.wallet,
-                    /*
-                    wallet_number: Number.parseFloat((keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet_number as string),
-                    public_key: (keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.public_key,
-                    wallet: (keyPairResult as MY_NANO_PHP_SEED2KEYPAIR).key_pair.wallet, 
-                    */
                     balance: "",
                     frontier: "",
                     bip39: "",

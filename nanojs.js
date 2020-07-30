@@ -156,9 +156,9 @@ req = { command: number, seed: string, wallet_number: number, prefix: string (op
 
       if (command === COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR) {
 /*
-req = { command: number, encrypted_stream: string, wallet_number: number, password: string, prefix: string(optional) }
+req = { command: number, encrypted_block: string, wallet_number: number, password: string, prefix: string(optional) }
 */
-         tmp1 = verifyError(req.body.encrypted_stream);
+         tmp1 = verifyError(req.body.encrypted_block);
 
          if (!tmp1)
             return res.json(sendDefaultError(9, "Missing: Encrypted block"));
@@ -167,7 +167,7 @@ req = { command: number, encrypted_stream: string, wallet_number: number, passwo
 
          tmp2 = verifyError(req.body.wallet_number);
 
-         if (!tmp2)
+         if (tmp2 === false)
             return res.json(sendDefaultError(10, "Missing: Wallet Number"));
 
          tmp3 = verifyError(req.body.password);

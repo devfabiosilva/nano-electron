@@ -16,7 +16,6 @@ import {
 
     MY_NANO_PHP_ERROR, 
     BRAINWALLET_RESPONSE, 
-    MY_NANO_PHP_SEED2KEYPAIR,
     GENERATED_ENCRYPTED_SEED,
     PUBLIC_KEY_TO_WALLET_RESPONSE,
     my_wallet,
@@ -200,6 +199,30 @@ export async function my_nano_js_public_key_to_wallet(public_key:string, prefix:
         return (data.error === 0)?res(data):error(data);
     });
 }
+
+export async function my_nano_js_encrypted_stream_to_key_pair(
+    
+    wallet_number: number,
+    password: string, 
+    encrypted_block: string,
+    prefix: string = NANO_PREFIX
+
+) {
+    let data: MY_NANO_JS_SEED2KEYPAIR|MY_NANO_JS_ERROR;
+console.log(wallet_number);
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_ENCRYPTED_STREAM_TO_KEY_PAIR,
+        wallet_number,
+        password,
+        encrypted_block,
+        prefix
+    }, "my_nano_js_encrypted_stream_to_key_pair");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
 /*
 // remove in future
 export async function my_nano_js_compare(valueA: string, valueB: string, typeA: string, typeB: string, condition: string) {
@@ -220,7 +243,7 @@ export async function my_nano_js_compare(valueA: string, valueB: string, typeA: 
 }
 */
 /// END NodeJS C bindings API
-
+/*
 export async function my_nano_php_encrypted_stream_to_key_pair(
     
     wallet_number: number,
@@ -242,7 +265,7 @@ export async function my_nano_php_encrypted_stream_to_key_pair(
     });
 
 }
-
+*/
 export async function my_nano_php_bip39_to_encrypted_stream(bip39: string, password: string)
 {
     let data: ENCRYPTED_STREAM_RESULT|MY_NANO_PHP_ERROR;

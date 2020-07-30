@@ -26,6 +26,7 @@ export interface SEED_AND_BIP39 {
     bip39?: string
 }
 /* Take Away */
+/*
 export interface MY_NANO_PHP_SEED2KEYPAIR {
     error: string|number,
     reason: string,
@@ -36,7 +37,7 @@ export interface MY_NANO_PHP_SEED2KEYPAIR {
         wallet: string
     }
 }
-
+*/
 export interface MY_NANO_PHP_PK2ADDRESS {
     error: string|number,
     reason: string,

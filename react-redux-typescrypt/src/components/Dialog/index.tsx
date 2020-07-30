@@ -20,7 +20,7 @@ import {
 
 } from '../../utils/wallet_interface';
 
-import { my_nano_php_encrypted_stream_to_key_pair } from '../../service';
+import { my_nano_js_encrypted_stream_to_key_pair } from '../../service';
 
 import { 
 
@@ -80,7 +80,7 @@ function Dialog(props: any) {
             } as NOTIFY_MESSAGE
         );
 
-        my_nano_php_encrypted_stream_to_key_pair((props.nano_wallet as my_wallet).wallet_number as number, password.value, (props.nano_wallet as my_wallet).encrypted_block as string).then(
+        my_nano_js_encrypted_stream_to_key_pair((props.nano_wallet as my_wallet).wallet_number as number, password.value, (props.nano_wallet as my_wallet).encrypted_block as string).then(
             (encrypted_block_res: any) => {
 
                 props.newNotification(

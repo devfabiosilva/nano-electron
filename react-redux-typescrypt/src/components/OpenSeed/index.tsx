@@ -5,7 +5,7 @@ import {
 
     my_nano_js_public_key_to_wallet,
     my_nano_php_bip39_to_encrypted_stream,
-    my_nano_php_encrypted_stream_to_key_pair,
+    my_nano_js_encrypted_stream_to_key_pair,
     my_nano_php_seed_to_encrypted_stream,
     my_nano_php_wallet_to_public_key,
 
@@ -93,7 +93,7 @@ export function OpenSeed(props: any) {
 
                     } as NOTIFY_MESSAGE);
 
-                    my_nano_php_encrypted_stream_to_key_pair(0, token, (result as ENCRYPTED_STREAM_RESULT).encrypted_stream as string).then(
+                    my_nano_js_encrypted_stream_to_key_pair(0, token, (result as ENCRYPTED_STREAM_RESULT).encrypted_stream as string).then(
                         (res: any) => {
                         
                             props.newNotification({
@@ -322,7 +322,7 @@ export function OpenSeed(props: any) {
         
                     } as NOTIFY_MESSAGE);
         
-                    my_nano_php_encrypted_stream_to_key_pair(0, token, (encrypted_stream_result as ENCRYPTED_STREAM_RESULT).encrypted_stream as string).then(
+                    my_nano_js_encrypted_stream_to_key_pair(0, token, (encrypted_stream_result as ENCRYPTED_STREAM_RESULT).encrypted_stream as string).then(
                         (seed2keypair: any) => {
 
                             props.wallet_public_key({

@@ -35,7 +35,7 @@ import {
 import { 
     
     my_nano_php_verify_message_sig, 
-    my_nano_php_encrypted_stream_to_key_pair, 
+    my_nano_js_encrypted_stream_to_key_pair, 
     my_nano_php_sign_message,
     /*my_nano_php_open_encrypted_seed*/
     my_nano_js_open_encrypted_seed
@@ -201,7 +201,7 @@ export function SignMessage(props: any) {
                 }
             )
         :
-            my_nano_php_encrypted_stream_to_key_pair(
+            my_nano_js_encrypted_stream_to_key_pair(
 
                 (props.wallet as my_wallet).wallet_number as number, 
                 tokenPasswordInput.value,

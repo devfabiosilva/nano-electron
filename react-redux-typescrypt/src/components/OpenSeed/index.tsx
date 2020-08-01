@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { 
 
     my_nano_js_public_key_to_wallet,
-    my_nano_php_bip39_to_encrypted_stream,
+    my_nano_js_bip39_to_encrypted_stream,
     my_nano_js_encrypted_stream_to_key_pair,
-    my_nano_php_seed_to_encrypted_stream,
+    my_nano_js_seed_to_encrypted_stream,
     my_nano_php_wallet_to_public_key,
 
 } from '../../service';
@@ -83,7 +83,7 @@ export function OpenSeed(props: any) {
         }
 
         if (props.bip39) {
-            my_nano_php_bip39_to_encrypted_stream(seed_value, token).then(
+            my_nano_js_bip39_to_encrypted_stream(seed_value, token).then(
                 (result: any) => {
 
                     props.newNotification({
@@ -163,7 +163,7 @@ export function OpenSeed(props: any) {
 
             } as NOTIFY_MESSAGE);
 
-            my_nano_php_seed_to_encrypted_stream(seed_value.substr(0, 64), token).then(
+            my_nano_js_seed_to_encrypted_stream(seed_value.substr(0, 64), token).then(
                 (encrypted_seed_res: any) => {
 
                     props.newNotification({
@@ -312,7 +312,7 @@ export function OpenSeed(props: any) {
 
             } as NOTIFY_MESSAGE);
 
-            my_nano_php_seed_to_encrypted_stream(seed_value, token).then(
+            my_nano_js_seed_to_encrypted_stream(seed_value, token).then(
                 (encrypted_stream_result: any) => {
 
                     props.newNotification({

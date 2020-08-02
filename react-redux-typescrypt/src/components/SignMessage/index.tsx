@@ -36,7 +36,7 @@ import {
     
     my_nano_js_verify_message_sig, 
     my_nano_js_encrypted_stream_to_key_pair, 
-    my_nano_php_sign_message,
+    my_nano_js_sign_message,
     /*my_nano_php_open_encrypted_seed*/
     my_nano_js_open_encrypted_seed
 
@@ -153,7 +153,7 @@ export function SignMessage(props: any) {
 
                     privateKey = `${(unencryptedSeedResult as OPEN_ENCRYPTED_SEED_RESPONSE).result.seed}${(props.wallet as my_wallet).public_key}`;
 
-                    my_nano_php_sign_message(
+                    my_nano_js_sign_message(
                         
                         messageHash,
                         privateKey, 
@@ -219,7 +219,7 @@ export function SignMessage(props: any) {
 
                     } as NOTIFY_MESSAGE);
 
-                    my_nano_php_sign_message(
+                    my_nano_js_sign_message(
                         
                         messageHash,
                         privateKey, 

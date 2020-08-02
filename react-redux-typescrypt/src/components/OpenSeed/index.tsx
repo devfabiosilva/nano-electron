@@ -7,7 +7,7 @@ import {
     my_nano_js_bip39_to_encrypted_stream,
     my_nano_js_encrypted_stream_to_key_pair,
     my_nano_js_seed_to_encrypted_stream,
-    my_nano_php_wallet_to_public_key,
+    my_nano_js_wallet_to_public_key,
 
 } from '../../service';
 
@@ -29,7 +29,6 @@ import {
     NOTIFY_MESSAGE,
     ENCRYPTED_STREAM_RESULT,
     MY_NANO_PHP_ERROR,
-    /*MY_NANO_PHP_SEED2KEYPAIR,*/
     MY_NANO_JS_SEED2KEYPAIR,
     WALLET_TO_PUBLIC_KEY
 
@@ -216,7 +215,7 @@ export function OpenSeed(props: any) {
         } else if (props.publicKey) {
 
             if ( (seed_value.indexOf(NANO_PREFIX) > -1) || (seed_value.indexOf(XRB_PREFIX) > -1) )
-                my_nano_php_wallet_to_public_key(seed_value).then(
+                my_nano_js_wallet_to_public_key(seed_value).then(
                     (extracted_public_key_result: any) => {
                         props.newNotification({
 

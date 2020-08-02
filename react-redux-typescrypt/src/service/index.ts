@@ -15,12 +15,10 @@ import {
 
 import { 
 
-    MY_NANO_PHP_ERROR, 
     BRAINWALLET_RESPONSE, 
     GENERATED_ENCRYPTED_SEED,
     PUBLIC_KEY_TO_WALLET_RESPONSE,
     my_wallet,
-    //BIG_NUMBER_COMPARE_RESPONSE,
     NEXT_PENDING_BLOCK_RESPONSE,
     ENCRYPTED_STREAM_RESULT,
     SIGNATURE_VERIFY,
@@ -288,47 +286,37 @@ export async function my_nano_js_verify_message_sig(signature: string, message: 
     });
 }
 
+export async function my_nano_js_sign_message(message: string, private_key: string, type: string = MY_NANO_PHP_VERIFY_SIG_MSG) {
+
+    let data: SIGNED_MESSAGE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_SIGN_MESSAGE,
+        message,
+        private_key,
+        type
+    }, "my_nano_js_sign_message");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
+export async function my_nano_js_wallet_to_public_key(wallet: string) {
+
+    let data: WALLET_TO_PUBLIC_KEY|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_WALLET_TO_PUBLIC_KEY,
+        wallet
+    }, "my_nano_js_wallet_to_public_key");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
 /// END NodeJS C bindings API
-/*
-export async function my_nano_php_verify_message_sig(signature: string, message: string, public_key: string, type: string = MY_NANO_PHP_VERIFY_SIG_MSG)
-{
-    let data: SIGNATURE_VERIFY|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=check_message_sig&signature=${signature}&pk=${public_key}&message=${message}&type=${type}`, "my_nano_php_verify_message_sig");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
-*/
-
-export async function my_nano_php_sign_message(message: string, private_key: string, type: string = MY_NANO_PHP_VERIFY_SIG_MSG)
-{
-    let data: SIGNED_MESSAGE|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=sign_message&private_key=${private_key}&message=${message}&type=${type}`, "my_nano_php_sign_message");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
-
-export async function my_nano_php_wallet_to_public_key(wallet: string)
-{
-    let data: WALLET_TO_PUBLIC_KEY|MY_NANO_PHP_ERROR;
-
-    data = await my_nano_php_api(`command=nano2pk&wallet=${wallet}`, "my_nano_php_wallet_to_public_key");
-
-    return new Promise((res, error) => {
-
-        return (data.error === "0")?res(data):error(data);
-
-    });
-}
 
 export async function my_nano_php_send_receive_money(
     wallet: my_wallet, 

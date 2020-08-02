@@ -16,6 +16,7 @@ const COMMAND_BIP39_TO_ENCRYPETED_STREAM = 9;
 const COMMAND_COMPARE = 10;
 const COMMAND_SEED_TO_ENCRYPTED_STREAM = 11;
 const COMMAND_VERIFY_SIGNATURE = 12;
+const COMMAND_SIGN_MESSAGE = 13;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
@@ -444,6 +445,42 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, valid: (result)?1:0});
+
+      }
+
+      if (command === COMMAND_SIGN_MESSAGE) {
+/*
+ req = {message: string, private_key: string, type: string}
+*/
+         tmp1 = verifyError(req.body.message);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(30, "Missing message"));
+
+         tmp2 = verifyError(req.body.private_key);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(31, "Missing private key"));
+
+         tmp3 = verifyError(req.body.type);
+
+         if (!tmp3)
+            return res.json(sendDefaultError(32, "Missing signature type"));
+
+         if (tmp3 === MY_NANO_JS_VERIFY_SIG_HASH)
+            tmp4 = stringToArrayBuffer(tmp1, 'hex');
+         else if (tmp3 === MY_NANO_JS_VERIFY_SIG_MSG)
+            tmp4 = stringToArrayBuffer(tmp1, null);
+         else
+            return res.json(sendDefaultError(33, "Missing or wrong signature type"));
+
+         try {
+            result = MY_NANO_JS.nanojs_sign_message(tmp4, tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, signature: result});
 
       }
 

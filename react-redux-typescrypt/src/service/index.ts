@@ -8,7 +8,8 @@ import {
     UNKNOWN_MY_NANO_PHP_SERVER_ERROR,
     changeToNanoPrefix,
     MY_NANO_PHP_VERIFY_SIG_MSG,
-    NANO_JS_COMMANDS
+    NANO_JS_COMMANDS,
+    MY_NANO_JS_VERIFY_SIG_MSG
 
 } from '../utils';
 
@@ -270,8 +271,25 @@ export async function my_nano_js_seed_to_encrypted_stream(seed: string, password
     });
 }
 
-/// END NodeJS C bindings API
+export async function my_nano_js_verify_message_sig(signature: string, message: string, public_key: string, type: string = MY_NANO_JS_VERIFY_SIG_MSG) {
 
+    let data: SIGNATURE_VERIFY|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_VERIFY_SIGNATURE,
+        signature,
+        message,
+        public_key,
+        type
+    }, "my_nano_js_verify_message_sig");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
+/// END NodeJS C bindings API
+/*
 export async function my_nano_php_verify_message_sig(signature: string, message: string, public_key: string, type: string = MY_NANO_PHP_VERIFY_SIG_MSG)
 {
     let data: SIGNATURE_VERIFY|MY_NANO_PHP_ERROR;
@@ -284,6 +302,7 @@ export async function my_nano_php_verify_message_sig(signature: string, message:
 
     });
 }
+*/
 
 export async function my_nano_php_sign_message(message: string, private_key: string, type: string = MY_NANO_PHP_VERIFY_SIG_MSG)
 {

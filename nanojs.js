@@ -15,6 +15,9 @@ const COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM = 8;
 const COMMAND_BIP39_TO_ENCRYPETED_STREAM = 9;
 const COMMAND_COMPARE = 10;
 const COMMAND_SEED_TO_ENCRYPTED_STREAM = 11;
+const COMMAND_VERIFY_SIGNATURE = 12;
+const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
+const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -27,12 +30,15 @@ function verifyError(value) {
    return false;
 }
 
-function stringToArrayBuffer(value) {
+function stringToArrayBuffer(value, type) {
    let uint8;
    let buffer;
    let arrayBuffer;
 
-   buffer = Buffer.from(value, 'hex');
+   if (type)
+      buffer = Buffer.from(value, type);
+   else
+      buffer = Buffer.from(value);
    arrayBuffer = new ArrayBuffer(buffer.length);
    uint8 = new Uint8Array(arrayBuffer);
    uint8.set(buffer);
@@ -67,7 +73,7 @@ module.exports = {
          if (!tmp2)
             return res.json(sendDefaultError(3, "Missing: Password"));
 
-         arrayBuffer = stringToArrayBuffer(tmp1);
+         arrayBuffer = stringToArrayBuffer(tmp1, 'hex');
 
          try {
             result = MY_NANO_JS.nanojs_encrypted_stream_to_seed(arrayBuffer, tmp2, 'dictionary.dic');
@@ -165,7 +171,7 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          if (!tmp1)
             return res.json(sendDefaultError(9, "Missing: Encrypted block"));
 
-         tmp1=stringToArrayBuffer(tmp1);
+         tmp1=stringToArrayBuffer(tmp1, 'hex');
 
          tmp2 = verifyError(req.body.wallet_number);
 
@@ -403,7 +409,46 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          return res.json({error: 0, reason: SUCCESS_MESSAGE, encrypted_stream: Buffer.from(result).toString('hex')});
       }
 
+      if (command === COMMAND_VERIFY_SIGNATURE) {
+/*
+ req = {signature: string, message: string, public_key: string, type: string}
+*/
+         tmp1 = verifyError(req.body.signature);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(26, "Missing signature"));
+
+         tmp2 = verifyError(req.body.message);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(27, "Missing message or hash string"));
+
+         tmp3 = verifyError(req.body.public_key);
+
+         if (!tmp3)
+            return res.json(sendDefaultError(28, "Missing public key or wallet"));
+
+         tmp4 = verifyError(req.body.type);
+
+         if (tmp4 === MY_NANO_JS_VERIFY_SIG_HASH)
+            tmp5 = stringToArrayBuffer(tmp2, 'hex');
+         else if (tmp4 === MY_NANO_JS_VERIFY_SIG_MSG)
+            tmp5 = stringToArrayBuffer(tmp2, null);
+         else
+            return res.json(sendDefaultError(29, "Missing or wrong signature type"));
+
+         try {
+            result = MY_NANO_JS.nanojs_verify_message(tmp1, tmp5, tmp3);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, valid: (result)?1:0});
+
+      }
+
       return res.json({ error: -2, reason: "Unknown command"});
+
    }
 
 }

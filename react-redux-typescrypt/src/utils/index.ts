@@ -17,6 +17,8 @@ export const DEFAULT_NOTIFY_TIMEOUT = 5000; // in milliseconds
 export const MY_NANO_PHP_DARK_MODE = "myNanoPHPDarkMode";
 export const MY_NANO_PHP_VERIFY_SIG_HASH = "hash";
 export const MY_NANO_PHP_VERIFY_SIG_MSG = "msg";
+export const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
+export const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 export const NANO_RPC_ERROR_MSG = "Nano RPC error %d";
 
 export const NOTIFY_TYPE = {
@@ -46,7 +48,8 @@ export const NANO_JS_COMMANDS = {
     COMMAND_GEN_SEED_TO_ENCRYPTED_STREAM: 8,
     COMMAND_BIP39_TO_ENCRYPETED_STREAM: 9,
     COMMAND_COMPARE: 10,
-    COMMAND_SEED_TO_ENCRYPTED_STREAM: 11
+    COMMAND_SEED_TO_ENCRYPTED_STREAM: 11,
+    COMMAND_VERIFY_SIGNATURE: 12
 }
 
 export function changeToNanoPrefix(wallet: string): string {

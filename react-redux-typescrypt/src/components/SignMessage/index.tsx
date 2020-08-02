@@ -34,7 +34,7 @@ import {
 
 import { 
     
-    my_nano_php_verify_message_sig, 
+    my_nano_js_verify_message_sig, 
     my_nano_js_encrypted_stream_to_key_pair, 
     my_nano_php_sign_message,
     /*my_nano_php_open_encrypted_seed*/
@@ -375,9 +375,9 @@ export function SignMessage(props: any) {
 
         } as NOTIFY_MESSAGE);
 
-        my_nano_php_verify_message_sig(signature, messageHash, walletPublicKeyValue, (isHash.checked)?MY_NANO_PHP_VERIFY_SIG_HASH:MY_NANO_PHP_VERIFY_SIG_MSG).then(
+        my_nano_js_verify_message_sig(signature, messageHash, walletPublicKeyValue, (isHash.checked)?MY_NANO_PHP_VERIFY_SIG_HASH:MY_NANO_PHP_VERIFY_SIG_MSG).then(
             (sign_res: any) => {
-                if ((sign_res as SIGNATURE_VERIFY).valid === "1") {
+                if ((sign_res as SIGNATURE_VERIFY).valid === 1) {
                     setSigStatus(VALID_SIG);
                     props.newNotification({
 

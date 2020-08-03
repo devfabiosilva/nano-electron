@@ -17,6 +17,7 @@ const COMMAND_COMPARE = 10;
 const COMMAND_SEED_TO_ENCRYPTED_STREAM = 11;
 const COMMAND_VERIFY_SIGNATURE = 12;
 const COMMAND_SIGN_MESSAGE = 13;
+const COMMAND_CREATE_BLOCK = 14;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
@@ -481,6 +482,68 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, signature: result});
+
+      }
+
+      if (command === COMMAND_CREATE_BLOCK) {
+
+         let account, previous, representative, amount, link, value_to_send_or_receive, direction;
+
+/*
+ req = {account: string, previous: string, representative: string, amount: string, link: string, value_to_send_or_receive: string, direction: number}
+*/
+         account = verifyError(req.body.account);
+
+         if (!account)
+            return res.json(sendDefaultError(34, "Missing account"));
+
+         previous = verifyError(req.body.previous);
+
+         if (!previous)
+            return res.json(sendDefaultError(35, "Missing previous"));
+
+         representative = verifyError(req.body.representative);
+
+         if (!representative)
+            return res.json(sendDefaultError(36, "Missing representative"));
+
+         amount = verifyError(req.body.amount);
+
+         if (!amount)
+            return res.json(sendDefaultError(37, "Missing amount"));
+
+         link = verifyError(req.body.link);
+
+         if (!link)
+            return res.json(sendDefaultError(38, "Missing link"));
+
+         value_to_send_or_receive = verifyError(req.body.value_to_send_or_receive);
+
+         if (!value_to_send_or_receive)
+            return res.json(sendDefaultError(39, "Missing: Value to send or receive"));
+
+         direction = verifyError(req.body.direction);
+
+         if (!direction)
+            return res.json(sendDefaultError(40, "Missing direction: send/receive"));
+
+         try {
+            result = MY_NANO_JS.nanojs_create_block(
+               account,
+               previous,
+               representative,
+               amount,
+               MY_NANO_JS.BALANCE_REAL_STRING,
+               value_to_send_or_receive,
+               MY_NANO_JS.VALUE_SEND_RECEIVE_REAL_STRING,
+               link,
+               direction
+            );
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
 
       }
 

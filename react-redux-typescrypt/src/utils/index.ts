@@ -3,9 +3,13 @@ export const NANO_PREFIX = "nano_";
 export const XRB_PREFIX = "xrb_";
 export const MAX_FEE = "0.0001"; // In real (human readable)
 export const DEFAULT_REPRESENTATIVE = "nano_3ngt59dc7hbsjd1dum1bw9wbb87mbtuj4qkwcruididsb5rhgdt9zb4w7kb9";
-export const UNKNOWN_MY_NANO_PHP_SERVER_ERROR = "Unknown myNanoPHP server error";
-export const SEND_COMMAND = "send";
-export const RECEIVE_COMMAND = "receive";
+export const UNKNOWN_MY_NANO_JS_SERVER_ERROR = "Unknown myNanoJS server error";
+/*
+export const VALUE_TO_SEND = 2;
+export const VALUE_TO_RECEIVE = 1;
+*/
+export const SEND_COMMAND = 2;//"send";
+export const RECEIVE_COMMAND = 1;//"receive";
 export const OPEN_BLOCK_TO_RECEIVE = "open_block";
 export const BACKGROUND_DARK = "dark";
 export const BACKGROUND_LIGHT = "light";
@@ -51,7 +55,8 @@ export const NANO_JS_COMMANDS = {
     COMMAND_COMPARE: 10,
     COMMAND_SEED_TO_ENCRYPTED_STREAM: 11,
     COMMAND_VERIFY_SIGNATURE: 12,
-    COMMAND_SIGN_MESSAGE: 13
+    COMMAND_SIGN_MESSAGE: 13,
+    COMMAND_CREATE_BLOCK: 14
 }
 
 export function changeToNanoPrefix(wallet: string): string {

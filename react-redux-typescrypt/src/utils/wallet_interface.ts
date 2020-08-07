@@ -261,5 +261,11 @@ export interface MY_NANO_JS_SEED2KEYPAIR {
 
 }
 
+export interface MY_NANO_JS_BLOCK_TO_JSON {
+    error: string|number,
+    reason: string,
+    block: any
+}
+
 
 //

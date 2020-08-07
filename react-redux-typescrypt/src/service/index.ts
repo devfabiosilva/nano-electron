@@ -28,7 +28,8 @@ import {
     MY_NANO_JS_ERROR,
     MY_NANO_JS_SEED2KEYPAIR,
     ENTROPY_TYPE,
-    BLOCK_RESPONSE
+    BLOCK_RESPONSE,
+    MY_NANO_JS_BLOCK_TO_JSON
 
 } from '../utils/wallet_interface';
 
@@ -344,6 +345,51 @@ export async function my_nano_js_create_block(
     });
 }
 
+export async function my_nano_js_sign_block(block: string, private_key: string) {
+
+    let data: BLOCK_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_SIGN_BLOCK,
+        block,
+        private_key
+    }, "my_nano_js_sign_block");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
+export async function my_nano_js_calculate_work_from_block(block: string, n_thr: number, threshold: string = "0xffffffc000000000") {
+
+    let data: BLOCK_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_CALCULATE_WORK_FROM_BLOCK,
+        block,
+        n_thr,
+        threshold
+    }, "my_nano_js_calculate_work_from_block");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
+export async function my_nano_js_block_to_JSON(block: string) {
+
+    let data: MY_NANO_JS_BLOCK_TO_JSON|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_BLOCK_TO_JSON,
+        block
+    }, "my_nano_js_block_to_JSON");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
 /// END NodeJS C bindings API
 
 export async function my_nano_php_send_receive_money(
@@ -420,30 +466,42 @@ export async function my_nano_php_send_receive_money(
                 (d: any) => {
                     if (d.error === 0) {
                         if (d.block)
-                            my_nano_php_api(`command=sign_block&block=${d.block}&private_key=${private_key}`, "my_nano_php_send_money").then(
+                            //my_nano_php_api(`command=sign_block&block=${d.block}&private_key=${private_key}`, "my_nano_php_send_money").then(
+                            my_nano_js_sign_block(d.block, private_key).then(
                                 (signed_block: any) => {
-                                    if (signed_block.error === "0") {
+                                    if (signed_block.error === 0) {
                                         if (signed_block.block) {
-                                            my_nano_php_api(`command=calculate_work_from_block&block=${signed_block.block}&n_thr=4`, "my_nano_php_send_money").then(
+                                            //my_nano_php_api(`command=calculate_work_from_block&block=${signed_block.block}&n_thr=4`, "my_nano_php_send_money").then(
+                                            my_nano_js_calculate_work_from_block(signed_block.block, 4).then(
                                                 (proof_of_work: any) => {
-                                                    if (proof_of_work.error === "0") {
+                                                    if (proof_of_work.error === 0) {
+                                                        console.log(proof_of_work.block)
                                                         if (proof_of_work.block)
-                                                            my_nano_php_api(`command=block_to_json&block=${proof_of_work.block}`, "my_nano_php_send_money").then(
+                                                            //my_nano_php_api(`command=block_to_json&block=${proof_of_work.block}`, "my_nano_php_send_money").then(
+                                                            my_nano_js_block_to_JSON(proof_of_work.block).then(
                                                                 (block_to_json: any) => {
-                                                                    if (block_to_json.error === "0")
+                                                                    console.log(block_to_json);
+                                                                    if (block_to_json.error === 0)
                                                                         nano_rpc_account_send_signed_block(block_to_json.block).then(
                                                                             (record_blockchain: any) => {
                                                                                 if (record_blockchain.error)
                                                                                     reject(record_blockchain);
                                                                                 resolve(record_blockchain);
                                                                             },
-                                                                            (err) => reject(err)
+                                                                            (err) => { 
+                                                                                console.log(err);
+                                                                                reject(err) 
+                                                                            }
 
                                                                         );
                                                                     else if (block_to_json.error)
                                                                         reject(block_to_json);
                                                                     else
                                                                         reject({error:"-7", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
+                                                                },
+                                                                (e) => {
+                                                                    console.log(e);
+                                                                    reject(e)
                                                                 }
                                                             )
                                                         else
@@ -452,12 +510,20 @@ export async function my_nano_php_send_receive_money(
                                                         reject(proof_of_work);
                                                     else
                                                         reject({error:"-5", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
+                                                },
+                                                (e) => {
+                                                    console.log(e);
+                                                    reject(e)
                                                 }
                                             );
                                         } else
                                             reject({error:"-4", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
                                     } else
                                         reject({error:"-3", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
+                                },
+                                (e) => { 
+                                    console.log(e);
+                                    reject(e) 
                                 }
                             )
                         else
@@ -467,8 +533,10 @@ export async function my_nano_php_send_receive_money(
                     } else
                         reject({error:"-1", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
                 },
-                (e) =>
+                (e) => {
+                    console.log(e);
                     reject(e)
+                }
             );
     });
 

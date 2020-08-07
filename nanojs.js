@@ -18,6 +18,9 @@ const COMMAND_SEED_TO_ENCRYPTED_STREAM = 11;
 const COMMAND_VERIFY_SIGNATURE = 12;
 const COMMAND_SIGN_MESSAGE = 13;
 const COMMAND_CREATE_BLOCK = 14;
+const COMMAND_SIGN_BLOCK = 15;
+const COMMAND_CALCULATE_WORK_FROM_BLOCK = 16;
+const COMMAND_BLOCK_TO_JSON = 17;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
@@ -499,8 +502,8 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
 
          previous = verifyError(req.body.previous);
 
-         if (!previous)
-            return res.json(sendDefaultError(35, "Missing previous"));
+         //if (!previous)
+         //   return res.json(sendDefaultError(35, "Missing previous"));
 
          representative = verifyError(req.body.representative);
 
@@ -547,7 +550,80 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
 
       }
 
-      return res.json({ error: -2, reason: "Unknown command"});
+      if (command === COMMAND_SIGN_BLOCK) {
+
+/*
+   req = {block: string, private_key: string}
+*/
+
+         tmp1 = verifyError(req.body.block);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(41, "Missing. Nano block"));
+
+         tmp2 = verifyError(req.body.private_key);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(42, "Missing private key"));
+
+         try {
+            result = MY_NANO_JS.nanojs_sign_block(stringToArrayBuffer(tmp1, 'hex'), tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
+      }
+
+      if (command === COMMAND_CALCULATE_WORK_FROM_BLOCK) {
+
+/*
+   req = {block: string, n_thr: number, threshold: string (optional)}
+*/
+         tmp1 = verifyError(req.body.block);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(43, "Missing block"));
+
+         tmp2 = verifyError(req.body.n_thr);
+
+         if (tmp2 === false)
+            return res.json(sendDefaultError(44, "Missing: Number of CPU threads"));
+
+         tmp3 = verifyError(req.body.threshold);
+
+         try {
+            result = (tmp3)?
+               MY_NANO_JS.nanojs_calculate_work_from_block(stringToArrayBuffer(tmp1, 'hex'), tmp2, BigInt(tmp3)):
+               MY_NANO_JS.nanojs_calculate_work_from_block(stringToArrayBuffer(tmp1, 'hex'), tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
+      }
+
+      if (command === COMMAND_BLOCK_TO_JSON) {
+
+/*
+   req = {block: string}
+*/
+         tmp1 = verifyError(req.body.block);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(45, "Missing block"));
+
+         try {
+            result = MY_NANO_JS.nanojs_block_to_JSON(stringToArrayBuffer(tmp1, 'hex'));
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: result});
+
+      }
+
+      return res.json({error: -2, reason: "Unknown command"});
 
    }
 

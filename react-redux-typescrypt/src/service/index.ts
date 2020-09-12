@@ -390,6 +390,23 @@ export async function my_nano_js_block_to_JSON(block: string) {
     });
 }
 
+export async function my_nano_js_block_to_p2pow(block: string, wallet: string, fee: string, representative: string|null = null) {
+
+    let data: BLOCK_RESPONSE|MY_NANO_JS_ERROR;
+
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_BLOCK_TO_P2POW,
+        block,
+        wallet,
+        fee,
+        representative
+    }, "my_nano_js_block_to_p2pow");
+
+    return new Promise((res, error) => {
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+
 /// END NodeJS C bindings API
 
 export async function my_nano_php_send_receive_money(
@@ -405,13 +422,24 @@ export async function my_nano_php_send_receive_money(
         let private_key: string = `${(wallet.private_key as string)}${wallet.public_key as string}`;
 
         if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
-            my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send_receive}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
+            my_nano_js_create_block(
+                wallet.wallet as string, 
+                wallet.frontier as string, 
+                wallet.wallet_representative as string, 
+                wallet.balance as string, 
+                destination_wallet,
+                amount_to_send_receive,
+                direction
+            ).then(
+            //my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send_receive}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
                 (d: any) => {
                     if (d.error === "0") {
                         if (d.block){
-                            my_nano_php_api(`command=block_to_p2pow&block=${d.block}&wallet=${wallet.worker_wallet}&fee=${wallet.fee}`, "my_nano_php_send_money").then(
+                            my_nano_js_block_to_p2pow(d.block, wallet.worker_wallet as string, wallet.fee as string).then(
+                            //my_nano_php_api(`command=block_to_p2pow&block=${d.block}&wallet=${wallet.worker_wallet}&fee=${wallet.fee}`, "my_nano_php_send_money").then(
                                 (worker: any) => {
-                                    if (worker.error === "0") {
+                                    //if (worker.error === "0") {
+                                    if (worker.error === 0) {
                                         if (worker.block) {
                                             my_nano_php_api(`command=sign_p2pow_block&block=${worker.block}&private_key=${private_key}`, "my_nano_php_send_money").then(
                                                 (signed_p2pow_block: any) => {

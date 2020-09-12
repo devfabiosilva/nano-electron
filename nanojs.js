@@ -21,6 +21,7 @@ const COMMAND_CREATE_BLOCK = 14;
 const COMMAND_SIGN_BLOCK = 15;
 const COMMAND_CALCULATE_WORK_FROM_BLOCK = 16;
 const COMMAND_BLOCK_TO_JSON = 17;
+const COMMAND_BLOCK_TO_P2POW = 18;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
@@ -620,6 +621,38 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, block: result});
+
+      }
+
+      if (command === COMMAND_BLOCK_TO_P2POW) {
+
+/*
+   req = {block: string, wallet: string, fee: string, representative: string|null}
+*/
+         tmp1 = verifyError(req.body.block);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(46, "Missing block"));
+
+         tmp2 = verifyError(req.body.wallet);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(47, "Missing Worker wallet"));
+
+         tmp3 = verifyError(req.body.fee);
+
+         if (!tmp3)
+            return res.json(sendDefaultError(48, "Missing Worker Fee"));
+
+         tmp4 = verifyError(req.body.representative);
+
+         try {
+            result = MY_NANO_JS.nanojs_block_to_p2pow(stringToArrayBuffer(tmp1, 'hex'), tmp2, (tmp4)?tmp4:null, tmp3);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
 
       }
 

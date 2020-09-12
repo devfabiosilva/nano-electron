@@ -59,7 +59,8 @@ export const NANO_JS_COMMANDS = {
     COMMAND_CREATE_BLOCK: 14,
     COMMAND_SIGN_BLOCK: 15,
     COMMAND_CALCULATE_WORK_FROM_BLOCK: 16,
-    COMMAND_BLOCK_TO_JSON: 17
+    COMMAND_BLOCK_TO_JSON: 17,
+    COMMAND_BLOCK_TO_P2POW: 18
 }
 
 export function changeToNanoPrefix(wallet: string): string {

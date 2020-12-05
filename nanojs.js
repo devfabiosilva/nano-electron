@@ -22,6 +22,8 @@ const COMMAND_SIGN_BLOCK = 15;
 const COMMAND_CALCULATE_WORK_FROM_BLOCK = 16;
 const COMMAND_BLOCK_TO_JSON = 17;
 const COMMAND_BLOCK_TO_P2POW = 18;
+const COMMAND_P2POW_TO_JSON = 19;
+const COMMAND_P2POW_SIGN_BLOCK = 20;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 
@@ -363,7 +365,7 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
             return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
          }
 
-         return res.json({error: 0, reason: SUCCESS_MESSAGE, value_a: tmp1, value_b: tmp2, result: (result)?1:0});
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, result: (result)?1:0});
 
       }
 
@@ -653,6 +655,51 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
          }
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
+
+      }
+
+      if (command === COMMAND_P2POW_TO_JSON) {
+
+         /*
+            req = {block: string}
+         */
+         tmp1 = verifyError(req.body.block);
+         
+         if (!tmp1)
+            return res.json(sendDefaultError(49, "Missing block"));
+         
+         try {
+            result = MY_NANO_JS.nanojs_p2pow_block_to_JSON(stringToArrayBuffer(tmp1, 'hex'));
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+         
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: Buffer.from(result).toString('hex')});
+
+      }
+
+      if (command === COMMAND_P2POW_SIGN_BLOCK) {
+
+         /*
+            req = {block: string, private_key: string}
+         */
+         tmp1 = verifyError(req.body.block);
+
+         if (!tmp1)
+            return res.json(sendDefaultError(50, "Missing block"));
+
+         tmp2 = verifyError(req.body.block);
+
+         if (!tmp2)
+            return res.json(sendDefaultError(51, "Private key"));
+
+         try {
+            result = MY_NANO_JS.nanojs_sign_p2pow_block(stringToArrayBuffer(tmp1, 'hex'), tmp2);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: result});
 
       }
 

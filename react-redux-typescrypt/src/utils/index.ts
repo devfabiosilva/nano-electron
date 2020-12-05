@@ -25,6 +25,14 @@ export const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 export const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
 export const NANO_RPC_ERROR_MSG = "Nano RPC error %d";
 
+// compare big numbers
+export const MY_NANO_JS_GREATER_THAN = "gt";
+export const MY_NANO_JS_LESS_THAN = "lt";
+export const MY_NANO_JS_EQUAL = "eq";
+export const MY_NANO_JS_GREATER_OR_EQUAL = "geq";
+export const MY_NANO_JS_LESS_OR_EQUAL = "leq";
+//
+
 export const NOTIFY_TYPE = {
 
     NOTIFY_TYPE_INFO: 0,
@@ -60,7 +68,9 @@ export const NANO_JS_COMMANDS = {
     COMMAND_SIGN_BLOCK: 15,
     COMMAND_CALCULATE_WORK_FROM_BLOCK: 16,
     COMMAND_BLOCK_TO_JSON: 17,
-    COMMAND_BLOCK_TO_P2POW: 18
+    COMMAND_BLOCK_TO_P2POW: 18,
+    COMMAND_P2POW_TO_JSON: 19,
+    COMMAND_P2POW_SIGN_BLOCK: 20
 }
 
 export function changeToNanoPrefix(wallet: string): string {

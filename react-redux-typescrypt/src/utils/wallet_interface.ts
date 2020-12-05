@@ -160,15 +160,13 @@ export interface BLOCK_RESPONSE {
     block: string
 
 }
-/*
+
 export interface BIG_NUMBER_COMPARE_RESPONSE {
     error: string|number,
     reason: string,
-    value_a: string,
-    value_b: string,
     result: number
 }
-*/
+
 export interface NEXT_PENDING_BLOCK_RESPONSE {
     block: string,
     amount_raw: string,
@@ -267,5 +265,21 @@ export interface MY_NANO_JS_BLOCK_TO_JSON {
     block: any
 }
 
+export interface MY_NANO_JS_P2POW_REQ_INFO {
+    fee: string,
+    max_multiplier: number,
+    min_multiplier: number,
+    reward_account: string,
+    version: string
+}
+
+export interface MY_NANO_JS_P2POW_WORK {
+    hash: string
+}
+
+export interface MY_NANO_JS_P2POW_ERROR {
+    error: number,
+    reason: string
+}
 
 //

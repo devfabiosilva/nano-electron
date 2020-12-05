@@ -17,7 +17,10 @@ import {
     UNKNOWN_MY_NANO_JS_SERVER_ERROR,
     MAX_FEE,
     MY_NANO_JS_GREATER_THAN,
-    MY_NANO_JS_EQUAL
+    MY_NANO_JS_EQUAL,
+    SEND_COMMAND,
+    THRESHOLD_SEND_CURRENT,
+    THRESHOLD_RECEIVE_CURRENT
 
 } from '../utils';
 
@@ -461,7 +464,7 @@ export async function my_nano_js_sign_p2pow_block(block: string, private_key: st
 
 /// END NodeJS C bindings API
 
-export async function my_nano_php_send_receive_money(
+export async function my_nano_js_send_receive_money(
     wallet: my_wallet, 
     destination_wallet: string, 
     amount_to_send_receive: string,
@@ -474,7 +477,7 @@ export async function my_nano_php_send_receive_money(
     if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
         let req_info: any = await requestInfo();
         let compare: any;
-
+console.log(req_info);
         if (req_info === null)
             return new Promise((res, err) => {
                 err({error: -20, reason: "Unable to reach P2PoW endpoint"});
@@ -540,7 +543,7 @@ export async function my_nano_php_send_receive_money(
             });
 
     }
-
+console.log("Aqui")
     return new Promise((resolve, reject) => {
 
         let private_key: string = `${(wallet.private_key as string)}${wallet.public_key as string}`;
@@ -635,7 +638,7 @@ export async function my_nano_php_send_receive_money(
                                     if (signed_block.error === 0) {
                                         if (signed_block.block) {
                                             //my_nano_php_api(`command=calculate_work_from_block&block=${signed_block.block}&n_thr=4`, "my_nano_php_send_money").then(
-                                            my_nano_js_calculate_work_from_block(signed_block.block, 4).then(
+                                            my_nano_js_calculate_work_from_block(signed_block.block, 4, (direction === SEND_COMMAND)?THRESHOLD_SEND_CURRENT:THRESHOLD_RECEIVE_CURRENT).then(
                                                 (proof_of_work: any) => {
                                                     if (proof_of_work.error === 0) {
                                                         console.log(proof_of_work.block)

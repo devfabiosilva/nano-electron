@@ -4,6 +4,8 @@ export const XRB_PREFIX = "xrb_";
 export const MAX_FEE = "0.0001"; // In real (human readable)
 export const DEFAULT_REPRESENTATIVE = "nano_3ngt59dc7hbsjd1dum1bw9wbb87mbtuj4qkwcruididsb5rhgdt9zb4w7kb9";
 export const UNKNOWN_MY_NANO_JS_SERVER_ERROR = "Unknown myNanoJS server error";
+export const THRESHOLD_RECEIVE_CURRENT = "0xfffffe0000000000";
+export const THRESHOLD_SEND_CURRENT = "0xfffffff800000000";
 /*
 export const VALUE_TO_SEND = 2;
 export const VALUE_TO_RECEIVE = 1;

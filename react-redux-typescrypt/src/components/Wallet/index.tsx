@@ -16,9 +16,9 @@ import {
   /*my_nano_php_raw2real,*/
   nano_rpc_account_representative,
   nano_rpc_account_frontier,
-  my_nano_php_send_receive_money,
   nano_rpc_get_pending,
   my_nano_js_raw2real,
+  my_nano_js_send_receive_money,
 
 } from '../../service';
 
@@ -164,7 +164,7 @@ export function Wallet(props: any) {
 
         }
 
-        my_nano_php_send_receive_money(props.state as my_wallet, dest_wallet, amount_to_send_receive, props.dialog_status).then(
+        my_nano_js_send_receive_money(props.state as my_wallet, dest_wallet, amount_to_send_receive, props.dialog_status).then(
           (transaction_result: any) => {
             setWalletReady(false);
             props.closeDialog();
@@ -456,6 +456,8 @@ export function Wallet(props: any) {
 
     let destinationWallet: any = document.getElementById('destination-wallet-id');
     let valueToSend: any = document.getElementById('value-to-send-id');
+    let feeInput: any = document.getElementById('fee-input-id');
+    //  state: state.wallet,
 
     if (destinationWallet.value === "") {
       props.newNotification({
@@ -482,6 +484,34 @@ export function Wallet(props: any) {
 
       return;
 
+    }
+
+    if (fee) {
+
+        let fee_err_msg = null;
+
+        if (feeInput.value === null)
+          fee_err_msg = "Fee input value is null";
+        else if (feeInput.value === undefined)
+          fee_err_msg = "Fee input value is undefined";
+        else if (feeInput.value.trim() === "")
+          fee_err_msg = "Fee input value is empty string";
+
+        if (fee_err_msg) {
+
+          props.newNotification({
+
+            notify_type: NOTIFY_TYPE.NOTIFY_TYPE_ERROR,
+            msg: fee_err_msg,
+            timeout: NOTIFICATION_TIME.TIME_NORMAL
+    
+          } as NOTIFY_MESSAGE);
+
+          return;
+        }
+
+        props.setMyWallet({fee: feeInput.value});
+        
     }
 
     if (props.dialog_status === "") {
@@ -627,7 +657,8 @@ export function Wallet(props: any) {
             </label>
             <input 
 
-              className="fee-input" 
+              className="fee-input"
+              id="fee-input-id"
               type="text" 
               defaultValue={ MAX_FEE } 
               placeholder={ props.language.placeholder_type_your_fee }

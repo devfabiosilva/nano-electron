@@ -24,8 +24,25 @@ const COMMAND_BLOCK_TO_JSON = 17;
 const COMMAND_BLOCK_TO_P2POW = 18;
 const COMMAND_P2POW_TO_JSON = 19;
 const COMMAND_P2POW_SIGN_BLOCK = 20;
+const SEND_RECEIVE_P2POW = 21;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
+
+const BIG_NUMBER_TYPE_USER_AMOUNT_REAL = 1;
+const BIG_NUMBER_TYPE_USER_AMOUNT_RAW = 2;
+const BIG_NUMBER_TYPE_USER_AMOUNT_HEX = 4;
+const BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL = 8;
+const BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_RAW = 16;
+const BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_HEX = 32;
+const BIG_NUMBER_TYPE_WORKER_FEE_REAL = 64;
+const BIG_NUMBER_TYPE_WORKER_FEE_RAW = 128;
+const BIG_NUMBER_TYPE_WORKER_FEE_HEX = 256;
+const BIG_NUMBER_TYPE_USER_FEE_REAL = 512;
+const BIG_NUMBER_TYPE_USER_FEE_RAW = 1024;
+const BIG_NUMBER_TYPE_USER_FEE_HEX = 2048;
+const BIG_NUMBER_TYPE_MAX_FEE_REAL = 4096;
+const BIG_NUMBER_TYPE_MAX_FEE_RAW = 8192;
+const BIG_NUMBER_TYPE_MAX_FEE_HEX = 16384;
 
 function sendDefaultError(err, reason) {
    return {error: err, reason: reason};
@@ -286,6 +303,7 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
 /*
  req = {valuea: string, typea: string, valueb: string, typeb: string, condition: string}
 */
+console.log(req.body);
          tmp1 = verifyError(req.body.value_a);
 
          if (!tmp1)
@@ -701,6 +719,198 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
 
          return res.json({error: 0, reason: SUCCESS_MESSAGE, block: result});
 
+      }
+
+      if (command === SEND_RECEIVE_P2POW) {
+
+/*
+   req = {wallet: string, wallet_representative: string, balance: string, amount_to_send_receive: string, direction: number, worker_wallet: string,
+   worker_representative: string|null, worker_fee: string, user_fee: string, max_fee: string, big_number_types: number, previous: string,link: string,
+   private_key: string }
+*/
+         let wallet, wallet_representative, balance, amount_to_send_receive, direction, worker_wallet, worker_representative, worker_fee, user_fee, max_fee;
+         let link, previous, private_key;
+         let nano_block, p2_pow_block, p2_pow_block_signed;
+
+         wallet = verifyError(req.body.wallet);
+
+         if (!wallet)
+            return res.json(sendDefaultError(52, "Missing user wallet"));
+
+         wallet_representative = verifyError(req.body.wallet_representative)
+
+         if (!wallet_representative)
+            return res.json(sendDefaultError(53, "Missing user wallet representative"));
+
+         balance = verifyError(req.body.balance);
+
+         if (!balance)
+            return res.json(sendDefaultError(54, "Missing user balance"));
+
+         balance = verifyError(req.body.amount_to_send_receive);
+
+         if (!amount_to_send_receive)
+            return res.json(sendDefaultError(55, "Missing value to send or receive"));
+
+         direction = verifyError(req.body.direction);
+
+         if (!direction)
+            return res.json(sendDefaultError(56, "Missing direction"));
+
+         worker_wallet = verifyError(req.body.worker_wallet);
+
+         if (!worker_wallet)
+            return res.json(sendDefaultError(57, "Missing worker wallet"));
+
+         worker_representative = verifyError(req.body.worker_representative);
+
+         worker_fee = verifyError(req.body.worker_fee);
+
+         if (!worker_fee)
+            return res.json(sendDefaultError(58, "Missing worker fee"));
+
+         user_fee = verifyError(req.body.user_fee);
+
+         if (!user_fee)
+            return res.json(sendDefaultError(59, "Missing user fee"));
+
+         max_fee = verifyError(req.body.max_fee);
+
+         if (!max_fee)
+            return res.json(sendDefaultError(60, "Missing MAX fee"));
+
+         big_number_types = verifyError(req.body.big_number_types);
+
+         if (!big_number_types)
+            return res.json(sendDefaultError(61, "Missing Big Number types"));
+
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_WORKER_FEE_REAL+BIG_NUMBER_TYPE_WORKER_FEE_RAW+BIG_NUMBER_TYPE_WORKER_FEE_HEX)) {
+            case BIG_NUMBER_TYPE_WORKER_FEE_REAL:
+               tmp1 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_REAL_STRING;
+               break;
+            case BIG_NUMBER_TYPE_WORKER_FEE_RAW:
+               tmp1 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_STRING;
+               break;
+            case BIG_NUMBER_TYPE_WORKER_FEE_HEX:
+               tmp1 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_128
+               break;
+            default:
+               return res.json(sendDefaultError(62, "Missing or invalid worker fee big number type"));
+         }
+
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_MAX_FEE_REAL+BIG_NUMBER_TYPE_MAX_FEE_RAW+BIG_NUMBER_TYPE_MAX_FEE_HEX)) {
+            case BIG_NUMBER_TYPE_MAX_FEE_REAL:
+               tmp2 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_REAL_STRING;
+               break;
+            case BIG_NUMBER_TYPE_MAX_FEE_RAW:
+               tmp2 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_STRING;
+               break;
+            case BIG_NUMBER_TYPE_MAX_FEE_HEX:
+               tmp2 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_128
+               break;
+            default:
+               return res.json(sendDefaultError(63, "Missing or invalid MAX FEE big number type"));
+         }
+
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_USER_FEE_REAL+BIG_NUMBER_TYPE_WORKER_FEE_RAW+BIG_NUMBER_TYPE_WORKER_FEE_HEX)) {
+            case BIG_NUMBER_TYPE_USER_FEE_REAL:
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_REAL_STRING;
+               break;
+            case BIG_NUMBER_TYPE_WORKER_FEE_RAW:
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_STRING;
+               break;
+            case BIG_NUMBER_TYPE_WORKER_FEE_HEX:
+               tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_128
+               break;
+            default:
+               return res.json(sendDefaultError(64, "Missing or invalid user fee big number type"));
+         }
+
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_USER_AMOUNT_REAL+BIG_NUMBER_TYPE_USER_AMOUNT_RAW+BIG_NUMBER_TYPE_USER_AMOUNT_HEX)) {
+            case BIG_NUMBER_TYPE_USER_AMOUNT_REAL:
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_REAL_STRING;
+               break;
+            case BIG_NUMBER_TYPE_USER_AMOUNT_RAW:
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_STRING;
+               break;
+            case BIG_NUMBER_TYPE_USER_AMOUNT_HEX:
+               tmp4 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_128
+               break;
+            default:
+               return res.json(sendDefaultError(65, "Missing or invalid user amount big number type"));
+         }
+
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL+BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_RAW+
+                 BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_HEX)) {
+            case BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL:
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_REAL_STRING;
+               break;
+            case BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_RAW:
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_STRING;
+               break;
+            case BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_HEX:
+               tmp5 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_B_RAW_128
+               break;
+            default:
+               return res.json(sendDefaultError(66, "Missing or invalid value to send or receive number type"));
+         }
+
+         if (MY_NANO_JS.nanojs_compare(max_fee, worker_fee, tmp1 + tmp2, MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_LT))
+            return res.json(sendDefaultError(67, "Worker fee is greater than MAX allowed fee"));
+
+         if (!MY_NANO_JS.nanojs_compare(user_fee, worker_fee, tmp1 + tmp3, MY_NANO_JS.NANO_BIG_NUMBER_CONDITIONAL.NANO_COMPARE_EQ))
+            return res.json(sendDefaultError(68, "Worker fee is not equal to user fee"));
+
+         link = verifyError(req.body.link);
+
+         if (!link)
+            return res.json(sendDefaultError(69, "Missing link or destination account"));
+
+         previous = verifyError(req.body.previous);
+
+         if (!previous)
+            return res.json(sendDefaultError(70, "Missing previous block"));
+
+         try {
+            nano_block = MY_NANO_JS.nanojs_create_block(
+               wallet,
+               previous,
+               wallet_representative,
+               balance,
+               tmp4,
+               amount_to_send_receive,
+               tmp5,
+               link,
+               direction
+            );
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         try {
+            p2_pow_block = MY_NANO_JS.nanojs_block_to_p2pow(nano_block, worker_wallet, (worker_representative)?worker_representative:null, worker_fee, tmp1);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         private_key = verifyError(req.body.private_key);
+
+         if (!private_key)
+            return res.json(sendDefaultError(71, "Missing private key"));
+
+         try {
+            p2_pow_block_signed = MY_NANO_JS.nanojs_sign_p2pow_block(p2_pow_block, private_key);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         try {
+            result = MY_NANO_JS.nanojs_p2pow_block_to_JSON(p2_pow_block_signed);
+         } catch (e) {
+            return res.json(sendDefaultError(e.code?parseInt(e.code):-1, e.message));
+         }
+
+         return res.json({error: 0, reason: SUCCESS_MESSAGE, block: result});
       }
 
       return res.json({error: -2, reason: "Unknown command"});

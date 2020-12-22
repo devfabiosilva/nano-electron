@@ -45,24 +45,13 @@ import {
     MY_NANO_JS_P2POW_REQ_INFO,
     MY_NANO_JS_P2POW_ERROR,
     MY_NANO_JS_P2POW_WORK,
-    BIG_NUMBER_COMPARE_RESPONSE
+    BIG_NUMBER_COMPARE_RESPONSE,
+    //MY_NANO_JS_P2POW_WORK_V2
 
 } from '../utils/wallet_interface';
 
-const MY_NANO_PHP_URL = 'http://localhost';
 const MY_NANO_JS_URL = 'http://localhost';
 const MY_NANO_JS_URL_PORT = 8176;
-
-// Take away this api in future
-const api = axios.create({
-    baseURL: MY_NANO_PHP_URL,
-    headers:    {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-    validateStatus: function () {
-        return true;
-    }
-});
 
 const api_c_binding = axios.create({
     baseURL: `${MY_NANO_JS_URL}:${MY_NANO_JS_URL_PORT}`,
@@ -97,19 +86,7 @@ const api_rpc = axios.create(
         }
     }
 )
-/* take away */
-/*
-export async function my_nano_php_api(send: any, function_name: string) {
-    let data: any;
 
-    await api.post('/template.php', send).then(
-        (res) => data = res.data,
-    );
-
-    return (data)?(data.error)?data:{error: "-2", reason: "Unexpected format"}:
-        {error: "-1", reason: "Something went wrong with " + function_name};
-
-}*/
 //// BEGIN NodeJS C bindings API
 export async function my_nano_js_api(send: any, function_name: string) {
     let data: any;
@@ -475,9 +452,10 @@ export async function my_nano_js_send_receive_money(
     let worker_wallet: any = null;
 
     if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
+        console.log("P2Pow");
         let req_info: any = await requestInfo();
+        console.log(req_info);
         let compare: any;
-console.log(req_info);
         if (req_info === null)
             return new Promise((res, err) => {
                 err({error: -20, reason: "Unable to reach P2PoW endpoint"});
@@ -491,66 +469,37 @@ console.log(req_info);
         fee = (req_info as MY_NANO_JS_P2POW_REQ_INFO).fee;
         worker_wallet = (req_info as MY_NANO_JS_P2POW_REQ_INFO).reward_account;
 
-        compare = await my_nano_js_compare(fee, MAX_FEE, "raw", "real", MY_NANO_JS_GREATER_THAN);
-
-        if (!compare)
-            return new Promise((res, err) => {
-                err({error: -21, reason: "Unable to reach \"my_nano_js_compare\" C function"});
-            });
+        compare = await my_nano_js_compare(fee as string, MAX_FEE, "raw", "real", MY_NANO_JS_GREATER_THAN).finally();
 
         if ((compare as BIG_NUMBER_COMPARE_RESPONSE).error !== 0)
-            return new Promise((res, err) => {
-                err(compare);
-            });
-
+            return compare;
+         
         if ((compare as BIG_NUMBER_COMPARE_RESPONSE).result !== 0)
-            return new Promise((res, err) => {
-                err({error: -22, reason: "Worker fee is greater than MAXIMUM ALLOWED FEE"});
-            });
-
-        compare = await my_nano_js_compare(fee, MAX_FEE, "raw", "real", MY_NANO_JS_GREATER_THAN);
-
-        if (!compare)
-            return new Promise((res, err) => {
-                err({error: -21, reason: "Unable to reach \"my_nano_js_compare\" C function"});
-            });
-
+            return {error: -22, reason: "Worker fee is greater than MAXIMUM ALLOWED FEE"};
+            /*
+console.log("Aqui 1")
+        compare = await my_nano_js_compare(fee as string, wallet.fee as string, "real", "raw", MY_NANO_JS_EQUAL);
+console.log("Aqui 2")
         if ((compare as BIG_NUMBER_COMPARE_RESPONSE).error !== 0)
             return new Promise((res, err) => {
                 err(compare);
             });
-
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).result !== 0)
-            return new Promise((res, err) => {
-                err({error: -22, reason: "Worker fee is greater than MAXIMUM ALLOWED FEE"});
-            });
-
-        compare = await my_nano_js_compare(fee, wallet.fee, "raw", "real", MY_NANO_JS_EQUAL);
-
-        if (!compare)
-            return new Promise((res, err) => {
-                err({error: -23, reason: "Unable to reach \"my_nano_js_compare\" C function"});
-            });
-    
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).error !== 0)
-            return new Promise((res, err) => {
-                err(compare);
-            });
-    
+            
+            
         if ((compare as BIG_NUMBER_COMPARE_RESPONSE).result !== 1)
             return new Promise((res, err) => {
-                err({error: -24, reason: "Fee must match with worker fee"});
+                err({error: -22, reason: "Worker fee and your worker is not the same."});
             });
-
+*/
     }
-console.log("Aqui")
+
     return new Promise((resolve, reject) => {
 
         let private_key: string = `${(wallet.private_key as string)}${wallet.public_key as string}`;
 
         //if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
         if (fee !== null) {
-
+console.log("Create block")
             my_nano_js_create_block(
                 wallet.wallet as string, 
                 wallet.frontier as string, 
@@ -560,32 +509,47 @@ console.log("Aqui")
                 amount_to_send_receive,
                 direction
             ).then(
+                
             //my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send_receive}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
                 (d: any) => {
+                    console.log("bloco")
+                    console.log(d)
                     if (d.error === 0) {
                         if (d.block){
                             my_nano_js_block_to_p2pow(d.block, worker_wallet, fee).then(
                             //my_nano_php_api(`command=block_to_p2pow&block=${d.block}&wallet=${wallet.worker_wallet}&fee=${wallet.fee}`, "my_nano_php_send_money").then(
                                 (worker: any) => {
                                     //if (worker.error === "0") {
+                                    console.log("p2pow")
+                                    console.log(worker)
                                     if (worker.error === 0) {
                                         if (worker.block) {
                                             my_nano_js_sign_p2pow_block(worker.block, private_key).then(
                                             //my_nano_php_api(`command=sign_p2pow_block&block=${worker.block}&private_key=${private_key}`, "my_nano_php_send_money").then(
                                                 (signed_p2pow_block: any) => {
+                                                    console.log("Signed p2pow worker")
+                                                    console.log(signed_p2pow_block)
                                                     if (signed_p2pow_block.error === 0) {
                                                         if (signed_p2pow_block.block) {
                                                             my_nano_js_p2pow_to_json(signed_p2pow_block.block).then(
                                                             //my_nano_php_api(`command=p2pow_to_json&block=${signed_p2pow_block.block}`, "my_nano_php_send_money").then(
                                                                 (p2pow_to_json: any) => {
+                                                                    console.log("p2pow2json")
+                                                                    console.log(p2pow_to_json)
                                                                     //if (p2pow_to_json.error === "0")
                                                                     if (p2pow_to_json.error === 0) {
                                                                         //resolve(p2pow_to_json);
+                                                                        console.log("Request")
+                                                                        console.log(p2pow_to_json);
                                                                         requestPow(p2pow_to_json.block).then(
-                                                                            (success: any) =>
-                                                                                resolve(success),
-                                                                            (error: any) =>
+                                                                            (success: any) => {
+                                                                                console.log(success);
+                                                                                resolve(success)
+                                                                            },
+                                                                            (error: any) => {
+                                                                                console.log(error)
                                                                                 reject(error)
+                                                                            }
                                                                         );
                                                                     } else if (p2pow_to_json.error)
                                                                         reject(p2pow_to_json);
@@ -616,8 +580,9 @@ console.log("Aqui")
                         reject(d);
                     } else
                         reject({error:"-10", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                }
-            );
+                },
+            (e: any) => console.log(e));
+            console.log("Fim")
         } else
             //my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
             my_nano_js_create_block(
@@ -820,10 +785,10 @@ export async function nano_rpc_get_pending(account: string) {
 /// Will be implemented
 
 async function requestInfo() {
-    let data: MY_NANO_JS_P2POW_REQ_INFO|MY_NANO_JS_P2POW_ERROR;
+    let data: MY_NANO_JS_P2POW_REQ_INFO|MY_NANO_JS_P2POW_ERROR|any;
  
     data = await p2pow_api.get('/request_info');
- 
+
     return new Promise((res, err) => {
 
        if (!data) {
@@ -832,25 +797,26 @@ async function requestInfo() {
             return err(data);
        }
  
-       return res(data as MY_NANO_JS_P2POW_REQ_INFO);
+       return res(data.data as MY_NANO_JS_P2POW_REQ_INFO);
 
     });
  }
 
  async function requestPow(signedP2PoWJSON: any) {
-    let data: MY_NANO_JS_P2POW_WORK|MY_NANO_JS_P2POW_ERROR;
+    let data: MY_NANO_JS_P2POW_REQ_INFO|MY_NANO_JS_P2POW_ERROR|any;
+    let error: MY_NANO_JS_P2POW_ERROR;
  
     data = await p2pow_api.post('/request_work', signedP2PoWJSON);
  
     return new Promise((res, err) => {
 
-       if (!data) {
-            (data as MY_NANO_JS_P2POW_ERROR).error = 101;
-            (data as MY_NANO_JS_P2POW_ERROR).reason = "Unable to perform a P2PoW transaction";
-            return err(data);
+       if (!data) {    
+            error.error = 101;
+            error.reason = "Unable to perform a P2PoW transaction";
+            return err(error);
        }
  
-       return res(data as MY_NANO_JS_P2POW_WORK);
+       return res(data.data as MY_NANO_JS_P2POW_WORK);
 
     });
  }

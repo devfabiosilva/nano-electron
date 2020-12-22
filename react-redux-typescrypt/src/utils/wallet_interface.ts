@@ -264,7 +264,7 @@ export interface MY_NANO_JS_BLOCK_TO_JSON {
     reason: string,
     block: any
 }
-
+/*
 export interface MY_NANO_JS_P2POW_REQ_INFO {
     fee: string,
     max_multiplier: number,
@@ -272,6 +272,27 @@ export interface MY_NANO_JS_P2POW_REQ_INFO {
     reward_account: string,
     version: string
 }
+*/
+export interface MY_NANO_JS_P2POW_REQ_INFO {
+				 
+    version: string,
+    status: string,
+    reward_account: string,
+    fee: string,
+    fee_receive: string,
+    dynamic_fee: boolean,
+    last_update: number,
+    min_multiplier: number,
+    max_multiplier: number,
+    network: {
+        minimum: string,
+        minimum_receive_minimum: string,
+        current: string,
+        receive_current: string,
+        multiplier: string
+    }
+}
+
 
 export interface MY_NANO_JS_P2POW_WORK {
     hash: string

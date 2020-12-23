@@ -20,7 +20,14 @@ import {
     MY_NANO_JS_EQUAL,
     SEND_COMMAND,
     THRESHOLD_SEND_CURRENT,
-    THRESHOLD_RECEIVE_CURRENT
+    THRESHOLD_RECEIVE_CURRENT,
+    BIG_NUMBER_TYPE_USER_AMOUNT_REAL,
+    BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL,
+    BIG_NUMBER_TYPE_WORKER_FEE_RAW,
+    BIG_NUMBER_TYPE_USER_FEE_REAL,
+    BIG_NUMBER_TYPE_MAX_FEE_REAL,
+    RECEIVE_COMMAND,
+    BIG_NUMBER_TYPE_USER_FEE_RAW
 
 } from '../utils';
 
@@ -46,6 +53,7 @@ import {
     MY_NANO_JS_P2POW_ERROR,
     MY_NANO_JS_P2POW_WORK,
     BIG_NUMBER_COMPARE_RESPONSE,
+    MY_NANO_JS_TO_P2POW_BLOCK,
     //MY_NANO_JS_P2POW_WORK_V2
 
 } from '../utils/wallet_interface';
@@ -439,6 +447,50 @@ export async function my_nano_js_sign_p2pow_block(block: string, private_key: st
     });
 }
 
+///
+export async function toP2PoWBlock(
+    previous: string,
+    wallet: string,
+    wallet_representative: string,
+    balance: string,
+    amount_to_send_receive: string,
+    direction: number,
+    worker_wallet: string,
+    worker_representative: string|null,
+    worker_fee: string,
+    user_fee: string,
+    max_fee: string,
+    link: string,
+    private_key: string,
+    big_number_types: number
+) {
+    let data: any;//MY_NANO_JS_TO_P2POW_BLOCK|MY_NANO_JS_ERROR;
+console.log("Aqui AAAA")
+    data = await my_nano_js_api({
+        command: NANO_JS_COMMANDS.COMMAND_SEND_RECEIVE_P2POW,
+        previous,
+        wallet,
+        wallet_representative,
+        balance,
+        amount_to_send_receive,
+        direction,
+        worker_wallet,
+        worker_representative,
+        worker_fee,
+        user_fee,
+        max_fee,
+        link,
+        private_key,
+        big_number_types
+    }, "toP2PoWBlock");
+
+    return new Promise((res, error) => {
+        console.log(data);
+        return (data.error === 0)?res(data):error(data);
+    });
+}
+///
+
 /// END NodeJS C bindings API
 
 export async function my_nano_js_send_receive_money(
@@ -448,141 +500,63 @@ export async function my_nano_js_send_receive_money(
     direction: number
 )
 {
-    let fee: any = null;
-    let worker_wallet: any = null;
-
-    if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
-        console.log("P2Pow");
-        let req_info: any = await requestInfo();
-        console.log(req_info);
-        let compare: any;
-        if (req_info === null)
-            return new Promise((res, err) => {
-                err({error: -20, reason: "Unable to reach P2PoW endpoint"});
-            });
-
-        if ((req_info as MY_NANO_JS_P2POW_ERROR).error)
-            return new Promise((res, err) => {
-                err(req_info)
-            });
-
-        fee = (req_info as MY_NANO_JS_P2POW_REQ_INFO).fee;
-        worker_wallet = (req_info as MY_NANO_JS_P2POW_REQ_INFO).reward_account;
-
-        compare = await my_nano_js_compare(fee as string, MAX_FEE, "raw", "real", MY_NANO_JS_GREATER_THAN).finally();
-
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).error !== 0)
-            return compare;
-         
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).result !== 0)
-            return {error: -22, reason: "Worker fee is greater than MAXIMUM ALLOWED FEE"};
-            /*
-console.log("Aqui 1")
-        compare = await my_nano_js_compare(fee as string, wallet.fee as string, "real", "raw", MY_NANO_JS_EQUAL);
-console.log("Aqui 2")
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).error !== 0)
-            return new Promise((res, err) => {
-                err(compare);
-            });
-            
-            
-        if ((compare as BIG_NUMBER_COMPARE_RESPONSE).result !== 1)
-            return new Promise((res, err) => {
-                err({error: -22, reason: "Worker fee and your worker is not the same."});
-            });
-*/
-    }
 
     return new Promise((resolve, reject) => {
 
         let private_key: string = `${(wallet.private_key as string)}${wallet.public_key as string}`;
 
-        //if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
-        if (fee !== null) {
-console.log("Create block")
-            my_nano_js_create_block(
-                wallet.wallet as string, 
-                wallet.frontier as string, 
-                wallet.wallet_representative as string, 
-                wallet.balance as string, 
-                destination_wallet,
-                amount_to_send_receive,
-                direction
-            ).then(
-                
-            //my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send_receive}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
-                (d: any) => {
-                    console.log("bloco")
-                    console.log(d)
-                    if (d.error === 0) {
-                        if (d.block){
-                            my_nano_js_block_to_p2pow(d.block, worker_wallet, fee).then(
-                            //my_nano_php_api(`command=block_to_p2pow&block=${d.block}&wallet=${wallet.worker_wallet}&fee=${wallet.fee}`, "my_nano_php_send_money").then(
-                                (worker: any) => {
-                                    //if (worker.error === "0") {
-                                    console.log("p2pow")
-                                    console.log(worker)
-                                    if (worker.error === 0) {
-                                        if (worker.block) {
-                                            my_nano_js_sign_p2pow_block(worker.block, private_key).then(
-                                            //my_nano_php_api(`command=sign_p2pow_block&block=${worker.block}&private_key=${private_key}`, "my_nano_php_send_money").then(
-                                                (signed_p2pow_block: any) => {
-                                                    console.log("Signed p2pow worker")
-                                                    console.log(signed_p2pow_block)
-                                                    if (signed_p2pow_block.error === 0) {
-                                                        if (signed_p2pow_block.block) {
-                                                            my_nano_js_p2pow_to_json(signed_p2pow_block.block).then(
-                                                            //my_nano_php_api(`command=p2pow_to_json&block=${signed_p2pow_block.block}`, "my_nano_php_send_money").then(
-                                                                (p2pow_to_json: any) => {
-                                                                    console.log("p2pow2json")
-                                                                    console.log(p2pow_to_json)
-                                                                    //if (p2pow_to_json.error === "0")
-                                                                    if (p2pow_to_json.error === 0) {
-                                                                        //resolve(p2pow_to_json);
-                                                                        console.log("Request")
-                                                                        console.log(p2pow_to_json);
-                                                                        requestPow(p2pow_to_json.block).then(
-                                                                            (success: any) => {
-                                                                                console.log(success);
-                                                                                resolve(success)
-                                                                            },
-                                                                            (error: any) => {
-                                                                                console.log(error)
-                                                                                reject(error)
-                                                                            }
-                                                                        );
-                                                                    } else if (p2pow_to_json.error)
-                                                                        reject(p2pow_to_json);
-                                                                    else
-                                                                        reject({error:"-16", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                                                                }
-                                                            )
-                                                        } else
-                                                            reject({error:"-15", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                                                    } else if (signed_p2pow_block.error)
-                                                        reject(signed_p2pow_block);
-                                                    else
-                                                        reject({error:"-14", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                                                }
-                                            );
-                                        } else
-                                            reject({error:"-13", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
+        if ((wallet.fee !== undefined) && (wallet.fee !== "")) {
 
-                                    } else if (worker.error)
-                                        reject(worker);
-                                    else
-                                        reject({error:"-12", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                                }
-                            );
-                        } else
-                            reject({error:"-11", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
-                    } else if (d.error) {
-                        reject(d);
-                    } else
-                        reject({error:"-10", reason: UNKNOWN_MY_NANO_JS_SERVER_ERROR});
+            requestInfo().then(
+                (res: any) => {
+
+                    //if (res.error === 0) {
+                        console.log(res);
+                        toP2PoWBlock(
+                            wallet.frontier as string,
+                            wallet.wallet as string,
+                            wallet.wallet_representative as string,
+                            wallet.balance as string,
+                            amount_to_send_receive,
+                            direction,
+                            (res as MY_NANO_JS_P2POW_REQ_INFO).reward_account,
+                            "",
+                            (direction === SEND_COMMAND)?(res as MY_NANO_JS_P2POW_REQ_INFO).fee:(res as MY_NANO_JS_P2POW_REQ_INFO).fee_receive,
+                            (direction === SEND_COMMAND)?(wallet.fee as string):(res as MY_NANO_JS_P2POW_REQ_INFO).fee_receive,
+                            MAX_FEE,
+                            destination_wallet,
+                            private_key,
+                            (direction === SEND_COMMAND)?(BIG_NUMBER_TYPE_USER_AMOUNT_REAL+BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL+
+                            BIG_NUMBER_TYPE_WORKER_FEE_RAW+BIG_NUMBER_TYPE_USER_FEE_REAL+BIG_NUMBER_TYPE_MAX_FEE_REAL):
+                            (BIG_NUMBER_TYPE_USER_AMOUNT_REAL+BIG_NUMBER_TYPE_VALUE_TO_SEND_RECEIVE_REAL+
+                            BIG_NUMBER_TYPE_WORKER_FEE_RAW+BIG_NUMBER_TYPE_USER_FEE_RAW+BIG_NUMBER_TYPE_MAX_FEE_REAL)
+                        ).then(
+                            (res: any) => {
+                                console.log(res);
+                                //resolve(res);
+                                requestPow(res.block).then(
+                                    (p2pow_res: any) => {
+console.log(p2pow_res);
+                                        resolve({error:"0", reason: "P2PoW success "})
+                                    },
+                                    (p2pow_err: any) =>
+                                        reject({error:"-11", reason: "P2PoW error"})
+                                )
+                            },
+                            (err: any) => {
+                                console.log(err)
+                                reject(err);
+                            }
+                        );
+                    //} else {
+                    //    console.log("Rejeitado")
+                    //    console.log(res);
+                    //    reject(res);
+                    //}
                 },
-            (e: any) => console.log(e));
-            console.log("Fim")
+                (err: any) => reject(err)
+            );
+
         } else
             //my_nano_php_api(`command=create_block&account=${wallet.wallet}&previous=${wallet.frontier}&representative=${wallet.wallet_representative}&balance=${wallet.balance}&val_send_rec=${amount_to_send}&link=${destination_wallet}&direction=${direction}`, "my_nano_php_send_money").then(
             my_nano_js_create_block(

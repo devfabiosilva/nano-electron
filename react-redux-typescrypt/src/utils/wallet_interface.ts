@@ -303,4 +303,32 @@ export interface MY_NANO_JS_P2POW_ERROR {
     reason: string
 }
 
+export interface MY_NANO_JS_TO_P2POW_BLOCK {
+    error: string|number,
+    reason: string,
+    block: {
+        user_block: {
+            block_type: string,
+            account: string,
+            previous: string,
+            representative: string,
+            balance: string,
+            link: string,
+            link_as_account: string,
+            signature: string
+          },
+          reward_block: {
+            block_type: string,
+            account: string,
+            previous: string,
+            representative: string,
+            balance: string,
+            link: string,
+            link_as_account: string,
+            signature: string
+          }
+    }
+
+}
+
 //

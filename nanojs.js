@@ -24,9 +24,12 @@ const COMMAND_BLOCK_TO_JSON = 17;
 const COMMAND_BLOCK_TO_P2POW = 18;
 const COMMAND_P2POW_TO_JSON = 19;
 const COMMAND_P2POW_SIGN_BLOCK = 20;
-const SEND_RECEIVE_P2POW = 21;
+const COMMAND_SEND_RECEIVE_P2POW = 21;
 const MY_NANO_JS_VERIFY_SIG_HASH = "hash";
 const MY_NANO_JS_VERIFY_SIG_MSG = "msg";
+
+const SEND_COMMAND = 2;
+const RECEIVE_COMMAND = 1;
 
 const BIG_NUMBER_TYPE_USER_AMOUNT_REAL = 1;
 const BIG_NUMBER_TYPE_USER_AMOUNT_RAW = 2;
@@ -303,7 +306,7 @@ req = { command: number, encrypted_block: string, wallet_number: number, passwor
 /*
  req = {valuea: string, typea: string, valueb: string, typeb: string, condition: string}
 */
-console.log(req.body);
+
          tmp1 = verifyError(req.body.value_a);
 
          if (!tmp1)
@@ -721,13 +724,15 @@ console.log(req.body);
 
       }
 
-      if (command === SEND_RECEIVE_P2POW) {
+      if (command === COMMAND_SEND_RECEIVE_P2POW) {
 
 /*
    req = {wallet: string, wallet_representative: string, balance: string, amount_to_send_receive: string, direction: number, worker_wallet: string,
    worker_representative: string|null, worker_fee: string, user_fee: string, max_fee: string, big_number_types: number, previous: string,link: string,
    private_key: string }
 */
+console.log("Aqui");
+console.log(req.body);
          let wallet, wallet_representative, balance, amount_to_send_receive, direction, worker_wallet, worker_representative, worker_fee, user_fee, max_fee;
          let link, previous, private_key;
          let nano_block, p2_pow_block, p2_pow_block_signed;
@@ -747,7 +752,7 @@ console.log(req.body);
          if (!balance)
             return res.json(sendDefaultError(54, "Missing user balance"));
 
-         balance = verifyError(req.body.amount_to_send_receive);
+         amount_to_send_receive = verifyError(req.body.amount_to_send_receive);
 
          if (!amount_to_send_receive)
             return res.json(sendDefaultError(55, "Missing value to send or receive"));
@@ -812,14 +817,14 @@ console.log(req.body);
                return res.json(sendDefaultError(63, "Missing or invalid MAX FEE big number type"));
          }
 
-         switch ((big_number_types)&(BIG_NUMBER_TYPE_USER_FEE_REAL+BIG_NUMBER_TYPE_WORKER_FEE_RAW+BIG_NUMBER_TYPE_WORKER_FEE_HEX)) {
+         switch ((big_number_types)&(BIG_NUMBER_TYPE_USER_FEE_REAL+BIG_NUMBER_TYPE_USER_FEE_RAW+BIG_NUMBER_TYPE_USER_FEE_HEX)) {
             case BIG_NUMBER_TYPE_USER_FEE_REAL:
                tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_REAL_STRING;
                break;
-            case BIG_NUMBER_TYPE_WORKER_FEE_RAW:
+            case BIG_NUMBER_TYPE_USER_FEE_RAW:
                tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_STRING;
                break;
-            case BIG_NUMBER_TYPE_WORKER_FEE_HEX:
+            case BIG_NUMBER_TYPE_USER_FEE_HEX:
                tmp3 = MY_NANO_JS.NANO_BIG_NUMBER_TYPE.NANO_A_RAW_128
                break;
             default:
